@@ -3,12 +3,36 @@ import plotly.express as px
 import pandas as pd
 import requests
 import json
+import os
 import boto3
 from requests_aws4auth import AWS4Auth
 import time
 from datetime import datetime
 from helpers.jsonGen import situation_dict,montants_fin,montants_immo,montants_emprunt,montants_pro,ENUM_OPTIONS
 from helpers.simul_contraint_main_sous_cat_v2 import simul_obj_client_from_dicts,import_json,impute_json
+
+
+def check_password():
+    """Returns `True` if the user had the correct password."""
+    def password_entered():
+        if st.session_state["password"] == st.secrets["APP_PASSWORD"]["PWD"]:
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]
+        elif st.session_state["password"] == os.getenv('APP_PASSWORD'):
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]
+        else:
+            st.session_state["password_correct"] = False
+
+    if "password_correct" not in st.session_state:
+        st.text_input("Password", type="password", on_change=password_entered, key="password")
+        return False
+    elif not st.session_state["password_correct"]:
+        st.text_input("Password", type="password", on_change=password_entered, key="password")
+        st.error("😕 Password incorrect")
+        return False
+    else:
+        return True
 
 
 def get_aws_credentials():
@@ -41,13 +65,14 @@ def get_aws_credentials():
 aws_access_key, aws_secret_key, aws_region = get_aws_credentials()
 session     = boto3.Session(aws_access_key_id=aws_access_key,
                             aws_secret_access_key=aws_secret_key,
-                            region_name = region_name)
+                            region_name = aws_region)
+
 credentials = session.get_credentials()
 
 auth = AWS4Auth(
     credentials.access_key,
     credentials.secret_key,
-    region_name,
+    aws_region,
     'execute-api',
     session_token=credentials.token
 )
@@ -550,7 +575,8 @@ def main():
         #         st.error("Failed to get a valid response from the API.")
 
 if __name__ == "__main__":
-    main()
+    if check_password():
+        main()
 
 # st.write("📁 This second part simulates the sending of a JSON payload to API Projection and returns the projection of legacy.")
 
