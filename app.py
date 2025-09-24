@@ -105,7 +105,7 @@ def render_dict_inputs(name, data):
                 key=f"{name}_{key}"
             )
         elif isinstance(val, list) and len(val) == 1 and isinstance(val[0], (int, float)):
-            updated[key] = [st.number_input(f"{name} - {key}", value=val[0], step=100)]
+            updated[key] = [st.number_input(f"{name} - {key}", value=val[0], step=1)]
 
         elif isinstance(val, bool):
             updated[key] = st.radio(
@@ -114,7 +114,7 @@ def render_dict_inputs(name, data):
                 key=f"{name}_{key}"
             )
         elif isinstance(val, (int, float)):
-            updated[key] = st.number_input(f"{name} - {key}", value=val, step=100)
+            updated[key] = st.number_input(f"{name} - {key}", value=val, step=1)
         elif isinstance(val, str):
             updated[key] = st.text_input(f"{name} - {key}", value=val)
 
@@ -214,36 +214,62 @@ def main():
     # Streamlit UI
     # Title and description
     global situation_dict,montants_fin,montants_immo,montants_emprunt,montants_pro,ENUM_OPTIONS
-    st.title("👋🏻 Démo - API Algo Klemo")
 
     if 'json_proj' not in st.session_state:
         st.session_state.json_proj = None
     if 'json_synth_id' not in st.session_state:
         st.session_state.json_synth_id = None
+    # Initialize session state with your imported dictionaries
+    if 'situation_dict' not in st.session_state:
+        st.session_state.situation_dict = situation_dict
+    if 'montants_fin' not in st.session_state:
+        st.session_state.montants_fin = montants_fin
+    if 'montants_immo' not in st.session_state:
+        st.session_state.montants_immo = montants_immo
+    if 'montants_emprunt' not in st.session_state:
+        st.session_state.montants_emprunt = montants_emprunt
+    if 'montants_pro' not in st.session_state:
+        st.session_state.montants_pro = montants_pro
+    if 'input_json' not in st.session_state:
+        input_json = import_json("json/vide_new.json")
+        st.session_state.input_json = input_json
+
+    
+    st.title("👋🏻 Démo - API Algo Klemo")
+
 
     with st.expander("😇 PART 0.1 : Create Personnae", expanded=True):
-        st.sidebar.header("Navigation")
+        st.sidebar.header("Navigation FastPat")
         section = st.sidebar.radio("Choose Section", ["Situation", "Montants Financiers", "Immobilier", "Emprunts", "Pro"])
 
         if section == "Situation":
-            situation_dict = render_dict_inputs("Situation", situation_dict)
+            updated_dict = render_dict_inputs("Situation",  st.session_state.situation_dict)
+            st.session_state.situation_dict = updated_dict
         elif section == "Montants Financiers":
-            montants_fin = render_dict_inputs("Montants Financiers", montants_fin)
+            updated_dict = render_dict_inputs("Montants Financiers",  st.session_state.montants_fin)
+            st.session_state.montants_fin = updated_dict
         elif section == "Immobilier":
-            montants_immo = render_dict_inputs("Immobilier", montants_immo)
+            updated_dict = render_dict_inputs("Immobilier",  st.session_state.montants_immo)
+            st.session_state.montants_immo = updated_dict
         elif section == "Emprunts":
-            montants_emprunt = render_dict_inputs("Emprunts", montants_emprunt)
+            updated_dict = render_dict_inputs("Emprunts",  st.session_state.montants_emprunt)
+            st.session_state.montants_emprunt = updated_dict
         elif section == "Pro":
-            montants_pro = render_dict_inputs("Pro", montants_pro)
+            updated_dict = render_dict_inputs("Pro",  st.session_state.montants_pro)
+            st.session_state.montants_pro = updated_dict
 
-        p1=simul_obj_client_from_dicts(situation_dict, montants_fin, montants_immo, montants_pro, montants_emprunt)
-        input_json = import_json("json/vide_new.json")
-        impute_json(input_json,p1)
-
+        p1=simul_obj_client_from_dicts(st.session_state.situation_dict, 
+                                       st.session_state.montants_fin, 
+                                       st.session_state.montants_immo, 
+                                       st.session_state.montants_pro, 
+                                       st.session_state.montants_emprunt)
+        fresh_json = import_json("json/vide_new.json")
+        impute_json(fresh_json,p1)
+        st.session_state.input_json = fresh_json
+        
         if st.button("Generate JSON"):
-            
-            st.json(input_json)
-            st.download_button("Download JSON", json.dumps(input_json, indent=2), file_name="client_situation.json", mime="application/json")
+            st.json(st.session_state.input_json)
+            st.download_button("Download JSON", json.dumps(st.session_state.input_json, indent=2), file_name="client_situation.json", mime="application/json")
         
     with st.expander("📁 PART 1 : API FillScore", expanded=True):
         # uploaded_file = st.file_uploader("Choisir un fichier JSON", type="json")
@@ -255,14 +281,14 @@ def main():
             # display_customer_info(json_data)
 
             # Display the JSON data in a text area
-        st.text_area("Charged Payload FastPat", json.dumps(input_json, indent=2), height=300, key="fastpat_content")
+        st.text_area("Charged Payload FastPat", json.dumps(st.session_state.input_json, indent=2), height=300, key="fastpat_content")
 
         # Button to send the request
         if st.button("Envoyer une requête à l'API FillScore"):
-            if input_json: 
+            if st.session_state.input_json: 
                 try:
                     # Call the API with the parsed JSON
-                    json_proj, time_elapsed = call_api(input_json,FILL_SCORE_URL)
+                    json_proj, time_elapsed = call_api(st.session_state.input_json,FILL_SCORE_URL)
                     st.session_state.json_proj = json_proj["output"]
                     
                     if json_proj:

@@ -8,15 +8,15 @@ situation_dict = {
     "isCelib": False,
     "perso": {
         "Civilite": "M",
-        "Age": 35,
+        "Age": 30,
         "nbEnfants": 0,
         "typeUnion": 'Célibataire', #'Célibataire' ou  'Union Libre' ou 'Pacsé(e)' ou 'Marié(e)'
         "regimeMatrimonial": 'aucun' # 'aucun' ou 'communauté réduite aux acquêts' ou 'séparation de biens'
     },
     "cashflow": {
-        "revenusActivite": 80000,
+        "revenusActivite": 45000,
         "pensionRetraite": 0,
-        "depensesCourantes": 3000,
+        "depensesCourantes": 2000,
         "revenusActiviteConjoint": 0,
         "pensionRetraiteConjoint": 0,
         "nbPartFiscal": 1
@@ -76,11 +76,11 @@ montants_fin = {
     }
 }
 montants_immo = {
-    "RP" : {"RP" : [300000]},
+    "RP" : {"RP" : [200000]},
     "RS" : {"RS" : [0]},
     "RL":{
         "RL-Nue": [0], 
-        "RL-Nue Pinel": [180000],
+        "RL-Nue Pinel": [0],
         "RL-Nue Pinel+": [0],
         "RL-Nue ScellierIntBBC": [0], 
         "RL-Nue ScellierIntNonBBC": [0],
@@ -94,12 +94,12 @@ montants_immo = {
         "RL-Meuble Meublé TourismeNonClasse": [0],
         "Achat-NuePropriete": [0],
         "Achat-Viager": [0], 
-        "Achat-JouissanceDiffere": [70000]
+        "Achat-JouissanceDiffere": [0]
     },
-    "SCPI": {"SCPI-SCI": 2},
+    "SCPI": {"SCPI-SCI": 0},
     "Foret" : {
         "Foret": [0],
-        "GFI/GFF": [10000]
+        "GFI/GFF": [0]
     },
     "Terrain" : {
         "Terrain constructible": [0],
@@ -108,7 +108,7 @@ montants_immo = {
 }
 montants_emprunt = {
     "PretImmo": {
-        "Immo TxFixe":[120000], 
+        "Immo TxFixe":[180000], 
         "Immo TxFixe Différé":[0], 
         "Immo TxFixe InFine":[0], 
         "Immo PVH":[0],
