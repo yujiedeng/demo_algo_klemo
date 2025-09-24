@@ -51,7 +51,7 @@ def get_aws_credentials():
             aws_access_key = st.secrets["AWS"]["ACCESS_KEY"]
             aws_secret_key = st.secrets["AWS"]["SECRET_KEY"]
             aws_region = st.secrets["AWS"].get("REGION", "eu-west-1")
-            st.info("📝 Using credentials from Streamlit secrets (local development)")
+            # st.info("📝 Using credentials from Streamlit secrets (local development)")
         except (KeyError, AttributeError):
             # secrets not available either
             aws_access_key = None
@@ -429,8 +429,59 @@ def main():
                                     """,
                                     unsafe_allow_html=True
                                 )
+
+                                st.write("Estimation future de la valeur de vos investissements:")
+                                df_assetSynth = pd.DataFrame(json_synth["output"]["assetSynth"])
+                                fig = px.line(df_assetSynth, x='dates', y=['TotalPct5', 'TotalPct50', 'TotalPct95'],
+                                    title="Vos 3 scénarios d'évolution de votre patrimoine dans les années à venir",
+                                    labels={'value': 'Amount (€)', 'variable': 'Metrics'},
+                                    color_discrete_map={
+                                        'Scénario favorable': '#2E8B57',
+                                        'Scénario médian': '#87CEEB', 
+                                        'Scénario défavorable': '#FFD700'
+                                    })
+
+                                fig.update_traces(
+                                    selector={'name': 'Scénario favorable'},  # Dots for Sales
+                                    mode='markers+lines',
+                                    marker=dict(size=8, symbol='circle', line=dict(width=2, color='#2E8B57')),
+                                    line=dict(width=0)  # Hide the line, keep only markers
+                                )
+
+                                fig.update_traces(
+                                    selector={'name': 'Scénario médian'},  # Solid line for Forecast
+                                    mode='lines',
+                                    line=dict(width=3, dash='solid')
+                                )
+
+                                fig.update_traces(
+                                    selector={'name': 'Scénario défavorable'},  # Dots for Target
+                                    mode='markers',
+                                    marker=dict(size=6, symbol='diamond', color='#FFD700'),
+                                    line=dict(width=0)
+                                )
+
+                                # Enhance layout
+                                fig.update_layout(
+                                    title={
+                                        'text': "Vos 3 scénarios d'évolution de votre patrimoine dans les années à venir",
+                                        'x': 0.5,
+                                        'xanchor': 'center',
+                                        'font': {'size': 16}
+                                    },
+                                    xaxis_title='Date',
+                                    yaxis_title='Amount (€)',
+                                    legend_title='Metrics',
+                                    hovermode='x unified',
+                                    template='plotly_white'
+                                )
+
+                                st.plotly_chart(fig, use_container_width=True)
+
+
+
                                 st.write("Preview asset synthese:")
-                                st.dataframe(pd.DataFrame(json_synth["output"]["assetSynth"])[["dates","FinPct50","ImmoPct50","ScpiPct50","EmpruntPct50","ProPct50", "TresoPct50","TotalPct50"]].head(11))
+                                st.dataframe(df_assetSynth[["dates","FinPct50","ImmoPct50","ScpiPct50","EmpruntPct50","ProPct50", "TresoPct50","TotalPct50"]].head(11))
 
                                 st.write("Preview cashflow synthese:")
                                 st.dataframe(pd.DataFrame(json_synth["output"]["cashflowSynth"])[["dates","RevenusActivite","RetraiteRentePension","RetraitDivActifFinancier",	"RevenusImmobilier",	"DepensesCourantes",	"Emprunt", "RevenusScpiNet","RevenusProNet","ImpotsBareme","ImpotsAutres"	]].head(11))
