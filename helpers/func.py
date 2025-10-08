@@ -96,11 +96,27 @@ STRAT_URL        = "https://algo.yde.core.techklemo.com/v1"
 STRAT_INIT_URL   = f"{STRAT_URL}/strat_init"
 
 OBJECTIF_CHOICES = {
-    "investir" : ["regulier", "rp", "rl", "optimiser"],
-    "projet"   : ["projet","immo"],
-    "completer": ["revenus_supplementaires","optimiser"],
-    "impots"  : ["reduction_impots","fiscalite_revenus"]
+    "Investir" : ["Investir régulièrement", "Investir dans ma résidence principale", "Investir dans de l'immobilier locatif", "Optimiser la rentabilité et les risques de mes actifs financiers"],
+    "Financer un achat ou un projet"   : ["Financer un projet ponctuel (hors immobilier et hors voiture)","Financer un bien immobilier"],
+    "Compléter mes revenus": ["Générer des revenus supplémentaires","Optimiser mes revenus de retraite"],
+    "Payer moins d'impôts"  : ["Investir pour obtenir des réductions d'impots","Limiter la fiscalité sur les revenus"]
 }
+
+MAPPINGS_OBJECTIF_CHOICES = {
+    "Investir":"investir",
+    "Investir régulièrement":"regulier",
+    "Investir dans ma résidence principale":"rp",
+    "Investir dans de l'immobilier locatif":"rl",
+    "Optimiser la rentabilité et les risques de mes actifs financiers":"optimiser",
+    "Financer un achat ou un projet":"projet",
+    "Financer un projet ponctuel (hors immobilier et hors voiture)":"projet",
+    "Financer un bien immobilier":"immo",
+    "Compléter mes revenus":"completer",
+    "Générer des revenus supplémentaires":"revenus_supplementaires",
+    "Optimiser mes revenus de retraite":"optimiser",
+    "Payer moins d'impôts":"impots",
+    "Investir pour obtenir des réductions d'impots":"reduction_impots",
+    "Limiter la fiscalité sur les revenus":"fiscalite_revenus"}
 
 
 def display_bilan_synth(json_synth):
@@ -408,52 +424,59 @@ def display_bilan_synth(json_synth):
 
 
 
-def display_strat_output(payload_strat, strat_output,debut=0):
+def display_strat_output(obj, ssobj, payload_strat, strat_output,debut=0):
     with st.container():
         st.markdown("**ℹ️ Détails de l'Objectif Client**")
         cols = st.columns(2)
-        cols[0].metric("Objectif Principal", payload_strat.get('objectif', 'N/A'))
-        cols[1].metric("Sous-Objectif", payload_strat.get('sousObjectif', 'N/A'))
+        with cols[0]:
+            st.markdown("## Objectif Principal")
+            st.markdown(f"### {obj}")
+        with cols[1]:
+            st.markdown("## Sous Principal")
+            st.markdown(f"### {ssobj}")
 
-    # Display all available recommendations
-    st.subheader("✨ Recommendations disponibles")
-    if not strat_output:
-        st.warning("Pas de recommendations valides.")
-        return
-    
-    # Create tabs for each recommendation
-    tabs = st.tabs([f"Reco {i+1}" for i in range(len(strat_output))])
-    
-    for idx, content_strat in enumerate(strat_output):
-        with tabs[idx]:
-            # Recommendation card
-            with st.container():
-                st.markdown(f"""
-                <div style='
-                    padding: 1rem;
-                    border-radius: 0.5rem;
-                    background: #f8f9fa;
-                    margin-bottom: 1rem;
-                '>
-                    <h3 style='color: #2e86c1; margin-top: 0;'>{content_strat["texteStrat"]["titre"]}</h3>
-                    <p>{content_strat["texteStrat"]["description"]}</p>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # Metrics display
-                cols = st.columns(2)
-                cols[0].metric(
-                    label=content_strat["attribut"]["metrique1"]["description"],
-                    value=f"{content_strat['attribut']['metrique1']['value']} €",
-                    delta=None
-                )
-                
-                if "metrique2" in content_strat["attribut"]:
-                    cols[1].metric(
-                        label=content_strat["attribut"]["metrique2"]["description"],
-                        value=f"{content_strat['attribut']['metrique2']['value']} €",
-                        delta=None
-                    )
+
+        # Display all available recommendations
+    with st.expander("✨ Recommendations disponibles",expanded=True):
+        if not strat_output:
+            st.warning("Pas de recommendations valides.")
+            return
+        
+        # Create tabs for each recommendation
+        tabs = st.tabs([f"Reco {i+1}" for i in range(len(strat_output))])
+        
+        for idx, content_strat in enumerate(strat_output):
+            with tabs[idx]:
+                # Recommendation card
+                with st.container():
+                    st.markdown(f"""
+                    <div style='
+                        padding: 1rem;
+                        border-radius: 0.5rem;
+                        background: #f8f9fa;
+                        margin-bottom: 1rem;
+                    '>
+                        <h3 style='color: #2e86c1; margin-top: 0;'>{content_strat["texteStrat"]["titre"]}</h3>
+                        <p>{content_strat["texteStrat"]["description"]}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Metrics display
+                    cols = st.columns(2)
+                    with cols[0]:
+                        st.markdown(f"{content_strat['attribut']['metrique1']['libelle']}")
+                        cols[0].metric(
+                            label=content_strat["attribut"]["metrique1"]["description"],
+                            value=f"{content_strat['attribut']['metrique1']['value']} €",
+                            delta=None
+                        )
+                    with cols[1]:
+                        st.markdown(f"{content_strat['attribut']['metrique2']['libelle']}")
+                        cols[1].metric(
+                            label=content_strat["attribut"]["metrique2"]["description"],
+                            value=f"{content_strat['attribut']['metrique2']['value']} €",
+                            delta=None
+                        )
 
     # Best recommendation section
     if strat_output:
@@ -466,23 +489,78 @@ def display_strat_output(payload_strat, strat_output,debut=0):
             
             metric_cols = st.columns(2)
             with metric_cols[0]:
-                st.markdown("**Metrique Principale**")
+                st.markdown(best_element['attribut']['metrique1']['libelle'])
                 st.markdown(f"<h2 style='text-align: center;'>{best_element['attribut']['metrique1']['value']} €</h2>", unsafe_allow_html=True)
                 st.markdown(best_element['attribut']['metrique1']['description'])
             
             with metric_cols[1]:
-                st.markdown("**Metrique Secondaire**")
+                st.markdown(best_element['attribut']['metrique1']['libelle'])
                 st.markdown(f"<h2 style='text-align: center;'>{best_element['attribut']['metrique2']['value']} €</h2>", unsafe_allow_html=True)
                 st.markdown(best_element['attribut']['metrique2']['description'])
         
-        st.write(f"preview de la metrique 1: {best_element['attribut']['metrique1']['name']}")
-        if "pct5" in pd.DataFrame(best_element["variantesResult"][bestIndex]["metriques"][best_element["attribut"]['metrique1']['name']]).columns:
-            st.dataframe(pd.DataFrame(best_element["variantesResult"][bestIndex]["metriques"][best_element["attribut"]['metrique1']['name']])[["index","horizon","pct5","pct50","pct95"]].iloc[debut:debut+20])
-        else:
-            st.dataframe(pd.DataFrame(best_element["variantesResult"][bestIndex]["metriques"][best_element["attribut"]['metrique1']['name']])[["dates","horizon","pct50"]].iloc[debut:debut+20])
+        with st.expander("🧐 Diagnostic de la recommandation",expanded =True):
+            cols = st.columns(2)
+            with cols[0]:
+                st.markdown("✅  Avantages de cette recommandation")
+                for ele in best_element['texteStrat']['avantage']:
+                    st.markdown(f"  - {ele}")
+            with cols[1]:
+                st.markdown("⚠️  Inconvénients de cette recommandation")
+                for ele in best_element['texteStrat']['inconvenient']:
+                    st.markdown(f"  - {ele}")
+
+
+        with st.expander("🧐 Evolution gain et perte de la recommandation",expanded =True):
+            st.subheader(" Résultats concrets sur votre argent")
+            assetDif = pd.DataFrame(best_element["variantesResult"][bestIndex]["metriques"]["assetDif"]).rename(
+            columns={
+                "pct5": "Scénario défavorable",
+                "pct50": "Scénario médian",
+                "pct95": "Scénario favorable",
+            }
+            )
+            fig = px.line(assetDif, x='index', y=["Scénario défavorable", "Scénario médian","Scénario favorable"],
+                title="Vos 3 scénarios d'évolution de votre patrimoine dans les années à venir",
+                labels={'value': 'Montant (€)', 'variable': 'Scénarios'},
+                color_discrete_map={
+                    'Scénario favorable': '#2E8B57',
+                    'Scénario médian': '#87CEEB', 
+                    'Scénario défavorable': '#FFD700'
+                })
+            # --- Style each line separately ---
+            fig.update_traces(selector=dict(name='Scénario favorable'), line=dict(width=3, dash='dot'))
+            fig.update_traces(selector=dict(name='Scénario median'), line=dict(width=6, dash='solid'))
+            fig.update_traces(selector=dict(name='Scénario défavorable'), line=dict(width=3, dash='dot'))
+
+
+            # --- Layout ---
+            fig.update_layout(
+                title={
+                    'text': "Vos 3 scénarios d'évolution de votre patrimoine dans les années à venir",
+                    'x': 0.5,
+                    'xanchor': 'center',
+                    'font': {'size': 16}
+                },
+                xaxis_title='Date',
+                yaxis_title='Montant (€)',
+                legend_title='Scénario',
+                hovermode='x unified',
+                template='plotly_white'
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
+
+
+
+
+        # st.write(f"preview de la metrique 1: {best_element['attribut']['metrique1']['name']}")
+        # if "pct5" in pd.DataFrame(best_element["variantesResult"][bestIndex]["metriques"][best_element["attribut"]['metrique1']['name']]).columns:
+        #     st.dataframe(pd.DataFrame(best_element["variantesResult"][bestIndex]["metriques"][best_element["attribut"]['metrique1']['name']])[["index","horizon","pct5","pct50","pct95"]].iloc[debut:debut+20])
+        # else:
+        #     st.dataframe(pd.DataFrame(best_element["variantesResult"][bestIndex]["metriques"][best_element["attribut"]['metrique1']['name']])[["dates","horizon","pct50"]].iloc[debut:debut+20])
                 
         # st.write(f"preview de la metrique 2: {best_element['attribut']['metrique2']['name']}")
         # st.dataframe(pd.DataFrame(best_element["variantesResult"][bestIndex]["metriques"][best_element["attribut"]['metrique2']['name']])[["index","horizon","pct5","pct50","pct95"]].head(10))
-        
-        lastCost = best_element["variantesResult"][bestIndex]["metriques"]["difCout"][-1]
-        st.write(f"Coût et frais: A l'horizon de {lastCost['horizon']} ans, l'ensemble des coûts et de frais associés s'élève à  {lastCost['CoutsFraisTotal']} € (soit {round(lastCost['PctCoutsFraisTotal']*100,0)}%)")
+        with st.expander("🧐 Coût et frais de la recommandation" , expanded =True):
+            lastCost = best_element["variantesResult"][bestIndex]["metriques"]["difCout"][-1]
+            st.write(f"Coût et frais: A l'horizon de {lastCost['horizon']} ans, l'ensemble des coûts et de frais associés s'élève à  {lastCost['CoutsFraisTotal']} € (soit {round(lastCost['PctCoutsFraisTotal']*100,0)}%)")

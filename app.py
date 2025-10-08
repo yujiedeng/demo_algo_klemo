@@ -295,8 +295,8 @@ def main():
                 st.session_state.payload_strat = {
                     "requestId": st.session_state.json_synth_id, 
                     "requestKey": st.session_state.json_synth_key,
-                    "objectif": selected_objectif,
-                    "sousObjectif": selected_sous_objectif,
+                    "objectif": MAPPINGS_OBJECTIF_CHOICES[selected_objectif],
+                    "sousObjectif": MAPPINGS_OBJECTIF_CHOICES[selected_sous_objectif],
                     "paramObjectif": json.loads(paramObj),
                     "investorProfile":{"level":"Balanced","esg":"Neutral"}
                 }
@@ -314,7 +314,7 @@ def main():
                             print("debugging: strat_result",strat_result)
                             strat_output = strat_result.json()["output"]
                             
-                            display_strat_output(st.session_state.payload_strat, strat_output)
+                            display_strat_output(selected_objectif,selected_sous_objectif,st.session_state.payload_strat, strat_output)
 
                             # best_key, best_element = max(strat_output_cleaned.items(),key=lambda x: x[1]["attribut"]["metrique1"]["value"])
 
