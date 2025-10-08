@@ -113,7 +113,7 @@ def display_bilan_synth(json_synth):
     with col2:
         show2 = st.button("📈 Revenus et Charges")
     with col3:
-        show4 = st.button("⚖️ Impôts")
+        show3 = st.button("⚖️ Impôts")
 
     # --- Track which one is active in session_state ---
     if "current_graph" not in st.session_state:
@@ -123,10 +123,8 @@ def display_bilan_synth(json_synth):
         st.session_state.current_graph = 1
     elif show2:
         st.session_state.current_graph = 2
-    # elif show3:
-    #     st.session_state.current_graph = 3
-    # elif show4:
-    #     st.session_state.current_graph = 4
+    elif show3:
+        st.session_state.current_graph = 3
 
     # --- Single display area ---
 
@@ -250,7 +248,7 @@ def display_bilan_synth(json_synth):
 
     elif st.session_state.current_graph == 2:
 
-        st.write("Evolution de vos revenus et charges: ")
+        st.subheader("Evolution de vos revenus et charges: ")
         df_rev = pd.DataFrame(json_synth["output"]["cashflowCourantReel"])
         df_rev_graphe = df_rev.copy().rename(
             columns={
@@ -288,15 +286,125 @@ def display_bilan_synth(json_synth):
         
         st.write("Aperçu de l'évolution des revenus et des charges")
         st.dataframe(df_rev_graphe)
-    #     fig = px.scatter(df, x="gdpPercap", y="lifeExp", color="continent", title="Graph 2: GDP vs Life Expectancy")
-    # elif st.session_state.current_graph == 3:
-    #     fig = px.pie(df, names="continent", values="pop", title="Graph 3: Population Share")
-    # else:
-    #     fig = px.line(df, x="gdpPercap", y="lifeExp", color="continent", title="Graph 4: Trend Example")
+
+    elif st.session_state.current_graph == 3:
+
+        st.subheader("💶 Vos impôts: ")
+        st.write("En fonction des données renseignées, nous avons estimés vos imôts: ")
+        cashflowImpotsPhoto = json_synth["output"]["cashflowImpotsPhoto"]
+        with st.container():
+            st.markdown("""
+                <div style="
+                    background-color:#F3F7F4;
+                    padding:20px;
+                    border-radius:10px;
+                    margin-top:10px;
+                ">
+                    <h4>Impôts au barème pour l’année en cours</h4>
+                    <p style="color:grey; margin-top:-8px;">Ceux de votre déclaration annuelle</p>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                        <div>
+                            <h2 style="margin:0;">{ir_bareme:,.0f} €</h2>
+                            <p style="color:grey; margin:0;">Impôt sur le revenu</p>
+                        </div>
+                        <div>
+                            <h2 style="margin:0;">{ps_bareme:,.0f} €</h2>
+                            <p style="color:grey; margin:0;">Prélèvements sociaux</p>
+                        </div>
+                    </div>
+                </div>
+            """.format(ir_bareme=cashflowImpotsPhoto["IRBareme"], ps_bareme=cashflowImpotsPhoto["PSBareme"]),
+            unsafe_allow_html=True)
+        
+        with st.expander("📄 Détail du calcul"):
+            st.markdown(f"""
+                <div style="background-color:#F8F9FA; padding:15px; border-radius:10px;">
+                    <h5>Nombre de parts fiscales : <b>{cashflowImpotsPhoto["NombrePartFiscale"]}</b></h5>
+                    <hr>
+                    <h5>Impôts au barème progressif</h5>
+                    <ul>
+                        <li><b>Revenu brut total :</b> {cashflowImpotsPhoto["RevenuBrutTotal"]:,.0f} €</li>
+                        <li><b>Taux marginal d’imposition :</b> {cashflowImpotsPhoto["TMI"]*100:.0f} %</li>
+                        <li><b>Taux effectif d’imposition :</b> {cashflowImpotsPhoto["TauxBaremeProgressif"]*100:.2f} %</li>
+                        <li><b>Impôt sur le revenu au barème :</b> {cashflowImpotsPhoto["IRBareme"]:,.0f} €</li>
+                        <li><b>Prélèvements sociaux au barème :</b> {cashflowImpotsPhoto["PSBareme"]:,.0f} €</li>
+                    </ul>
+                    <hr>
+                    <h5>Autres impôts</h5>
+                    <ul>
+                        <li><b>Taxes :</b> {cashflowImpotsPhoto["Taxes"]:,.0f} €</li>
+                        <li><b>TVA sur revenus :</b> {cashflowImpotsPhoto["TVARevenus"]:,.0f} €</li>
+                    </ul>
+                </div>
+            """, unsafe_allow_html=True)
+        with st.container():
+            st.markdown("""
+                <div style="
+                    background-color:#F3F7F4;
+                    padding:20px;
+                    border-radius:10px;
+                    margin-top:10px;
+                ">
+                    <h4>Impôts prelevés sur les investissements</h4>
+                    <p style="color:grey; margin-top:-8px;">Prélèvement forfaitaire (ex: PFU...)</p>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                        <div>
+                            <h2 style="margin:0;">{ir_bareme:,.0f} €</h2>
+                            <p style="color:grey; margin:0;">Impôt sur le revenu</p>
+                        </div>
+                        <div>
+                            <h2 style="margin:0;">{ps_bareme:,.0f} €</h2>
+                            <p style="color:grey; margin:0;">Prélèvements sociaux</p>
+                        </div>
+                    </div>
+                </div>
+            """.format(ir_bareme=cashflowImpotsPhoto["IRPreleve"], ps_bareme=cashflowImpotsPhoto["PSPreleve"]),
+            unsafe_allow_html=True)
+
+        with st.container():
+            st.markdown("""
+                <div style="
+                    background-color:#F3F7F4;
+                    padding:20px;
+                    border-radius:10px;
+                    margin-top:10px;
+                ">
+                    <h4>Impôts sur la fortune immobilière</h4>
+                    <p style="color:grey; margin-top:-8px;">Si assujetti</p>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                         <div>
+                            <h2 style="margin:0;">{ifi:,.0f} €</h2>
+                        </div>
+            """.format(ifi=cashflowImpotsPhoto["MontantImpotsIFI"]),
+            unsafe_allow_html=True)
 
 
 
+        st.subheader("Evolution de vos impôts: ")
+        df_impot = pd.DataFrame(json_synth["output"]["cashflowSynth"])[["dates","ImpotsBareme","ImpotsInvest","ImpotsAutres"]]
+        df_impot[df_impot.select_dtypes(include='number').columns] *= -1
+        fig = px.line(df_impot, x='dates', y=["ImpotsBareme","ImpotsInvest","ImpotsAutres"],
+            # title="Revenus et charges ajustés de l'inflation au fil des années",
+            labels={'value': 'Montant (€)', 'variable': 'Scénarios'},
+            )
+        # --- Style each line separately ---
+        fig.update_traces(selector=dict(name='ImpotsBareme'), line=dict(width=4, dash='solid'))
+        fig.update_traces(selector=dict(name='ImpotsInvest'), line=dict(width=4, dash='solid'))
+        fig.update_traces(selector=dict(name='ImpotsAutres'), line=dict(width=4, dash='solid'))
 
+        # --- Layout ---
+        fig.update_layout(
+
+            xaxis_title='Date',
+            yaxis_title='Montant (€)',
+            hovermode='x unified',
+            template='plotly_white'
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+        
+        st.write("Aperçu de l'évolution des revenus et des charges")
+        st.dataframe(df_impot)
 
 
 
