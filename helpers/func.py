@@ -353,29 +353,29 @@ def display_bilan_synth(json_synth):
                 </ul>
             </div>
         """, unsafe_allow_html=True)
-    with st.container():
-        st.markdown("""
-            <div style="
-                background-color:#F3F7F4;
-                padding:20px;
-                border-radius:10px;
-                margin-top:10px;
-            ">
-                <h4>Impôts prelevés sur les investissements</h4>
-                <p style="color:grey; margin-top:-8px;">Prélèvement forfaitaire (ex: PFU...)</p>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-                    <div>
-                        <h2 style="margin:0;">{ir_bareme:,.0f} €</h2>
-                        <p style="color:grey; margin:0;">Impôt sur le revenu</p>
-                    </div>
-                    <div>
-                        <h2 style="margin:0;">{ps_bareme:,.0f} €</h2>
-                        <p style="color:grey; margin:0;">Prélèvements sociaux</p>
+        with st.container():
+            st.markdown("""
+                <div style="
+                    background-color:#F3F7F4;
+                    padding:20px;
+                    border-radius:10px;
+                    margin-top:10px;
+                ">
+                    <h4>Impôts prelevés sur les investissements</h4>
+                    <p style="color:grey; margin-top:-8px;">Prélèvement forfaitaire (ex: PFU...)</p>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                        <div>
+                            <h2 style="margin:0;">{ir_bareme:,.0f} €</h2>
+                            <p style="color:grey; margin:0;">Impôt sur le revenu</p>
+                        </div>
+                        <div>
+                            <h2 style="margin:0;">{ps_bareme:,.0f} €</h2>
+                            <p style="color:grey; margin:0;">Prélèvements sociaux</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        """.format(ir_bareme=cashflowImpotsPhoto["IRPreleve"], ps_bareme=cashflowImpotsPhoto["PSPreleve"]),
-        unsafe_allow_html=True)
+            """.format(ir_bareme=cashflowImpotsPhoto["IRPreleve"], ps_bareme=cashflowImpotsPhoto["PSPreleve"]),
+            unsafe_allow_html=True)
 
         with st.container():
             st.markdown("""
