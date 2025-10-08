@@ -332,50 +332,50 @@ def display_bilan_synth(json_synth):
             """.format(ir_bareme=cashflowImpotsPhoto["IRBareme"], ps_bareme=cashflowImpotsPhoto["PSBareme"]),
             unsafe_allow_html=True)
         
-        with st.expander("📄 Détail du calcul"):
-            st.markdown(f"""
-                <div style="background-color:#F8F9FA; padding:15px; border-radius:10px;">
-                    <h5>Nombre de parts fiscales : <b>{cashflowImpotsPhoto["NombrePartFiscale"]}</b></h5>
-                    <hr>
-                    <h5>Impôts au barème progressif</h5>
-                    <ul>
-                        <li><b>Revenu brut total :</b> {cashflowImpotsPhoto["RevenuBrutTotal"]:,.0f} €</li>
-                        <li><b>Taux marginal d’imposition :</b> {cashflowImpotsPhoto["TMI"]*100:.0f} %</li>
-                        <li><b>Taux effectif d’imposition :</b> {cashflowImpotsPhoto["TauxBaremeProgressif"]*100:.2f} %</li>
-                        <li><b>Impôt sur le revenu au barème :</b> {cashflowImpotsPhoto["IRBareme"]:,.0f} €</li>
-                        <li><b>Prélèvements sociaux au barème :</b> {cashflowImpotsPhoto["PSBareme"]:,.0f} €</li>
-                    </ul>
-                    <hr>
-                    <h5>Autres impôts</h5>
-                    <ul>
-                        <li><b>Taxes :</b> {cashflowImpotsPhoto["Taxes"]:,.0f} €</li>
-                        <li><b>TVA sur revenus :</b> {cashflowImpotsPhoto["TVARevenus"]:,.0f} €</li>
-                    </ul>
-                </div>
-            """, unsafe_allow_html=True)
-        with st.container():
-            st.markdown("""
-                <div style="
-                    background-color:#F3F7F4;
-                    padding:20px;
-                    border-radius:10px;
-                    margin-top:10px;
-                ">
-                    <h4>Impôts prelevés sur les investissements</h4>
-                    <p style="color:grey; margin-top:-8px;">Prélèvement forfaitaire (ex: PFU...)</p>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-                        <div>
-                            <h2 style="margin:0;">{ir_bareme:,.0f} €</h2>
-                            <p style="color:grey; margin:0;">Impôt sur le revenu</p>
-                        </div>
-                        <div>
-                            <h2 style="margin:0;">{ps_bareme:,.0f} €</h2>
-                            <p style="color:grey; margin:0;">Prélèvements sociaux</p>
-                        </div>
+        st.subheader("📄 Détail du calcul")
+        st.markdown(f"""
+            <div style="background-color:#F8F9FA; padding:15px; border-radius:10px;">
+                <h5>Nombre de parts fiscales : <b>{cashflowImpotsPhoto["NombrePartFiscale"]}</b></h5>
+                <hr>
+                <h5>Impôts au barème progressif</h5>
+                <ul>
+                    <li><b>Revenu brut total :</b> {cashflowImpotsPhoto["RevenuBrutTotal"]:,.0f} €</li>
+                    <li><b>Taux marginal d’imposition :</b> {cashflowImpotsPhoto["TMI"]*100:.0f} %</li>
+                    <li><b>Taux effectif d’imposition :</b> {cashflowImpotsPhoto["TauxBaremeProgressif"]*100:.2f} %</li>
+                    <li><b>Impôt sur le revenu au barème :</b> {cashflowImpotsPhoto["IRBareme"]:,.0f} €</li>
+                    <li><b>Prélèvements sociaux au barème :</b> {cashflowImpotsPhoto["PSBareme"]:,.0f} €</li>
+                </ul>
+                <hr>
+                <h5>Autres impôts</h5>
+                <ul>
+                    <li><b>Taxes :</b> {cashflowImpotsPhoto["Taxes"]:,.0f} €</li>
+                    <li><b>TVA sur revenus :</b> {cashflowImpotsPhoto["TVARevenus"]:,.0f} €</li>
+                </ul>
+            </div>
+        """, unsafe_allow_html=True)
+    with st.container():
+        st.markdown("""
+            <div style="
+                background-color:#F3F7F4;
+                padding:20px;
+                border-radius:10px;
+                margin-top:10px;
+            ">
+                <h4>Impôts prelevés sur les investissements</h4>
+                <p style="color:grey; margin-top:-8px;">Prélèvement forfaitaire (ex: PFU...)</p>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                    <div>
+                        <h2 style="margin:0;">{ir_bareme:,.0f} €</h2>
+                        <p style="color:grey; margin:0;">Impôt sur le revenu</p>
+                    </div>
+                    <div>
+                        <h2 style="margin:0;">{ps_bareme:,.0f} €</h2>
+                        <p style="color:grey; margin:0;">Prélèvements sociaux</p>
                     </div>
                 </div>
-            """.format(ir_bareme=cashflowImpotsPhoto["IRPreleve"], ps_bareme=cashflowImpotsPhoto["PSPreleve"]),
-            unsafe_allow_html=True)
+            </div>
+        """.format(ir_bareme=cashflowImpotsPhoto["IRPreleve"], ps_bareme=cashflowImpotsPhoto["PSPreleve"]),
+        unsafe_allow_html=True)
 
         with st.container():
             st.markdown("""
