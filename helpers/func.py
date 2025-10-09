@@ -219,23 +219,23 @@ def display_bilan_synth(json_synth):
         df_assetSynth = pd.DataFrame(json_synth["output"]["assetSynth"]).copy()
         df_assetSynth_graphe = df_assetSynth.copy().rename(
             columns={
-                "TotalPct5": "Scénario favorable",
+                "TotalPct5": "Scénario défavorable",
                 "TotalPct50": "Scénario médian",
-                "TotalPct95": "Scénario défavorable"
+                "TotalPct95": "Scénario favorable"
             }
         )
         fig = px.line(df_assetSynth_graphe, x='dates', y=["Scénario favorable","Scénario médian", "Scénario défavorable"],
             title="Vos 3 scénarios d'évolution de votre patrimoine dans les années à venir",
             labels={'value': 'Montant (€)', 'variable': 'Scénarios'},
             color_discrete_map={
-                'Scénario favorable': '#2E8B57',
+                'Scénario défavorable': '#2E8B57',
                 'Scénario médian': '#87CEEB', 
-                'Scénario défavorable': '#FFD700'
+                'Scénario favorable': '#FFD700'
             })
         # --- Style each line separately ---
-        fig.update_traces(selector=dict(name='Scénario favorable'), line=dict(width=3, dash='dot'))
-        fig.update_traces(selector=dict(name='Scénario median'), line=dict(width=6, dash='solid'))
         fig.update_traces(selector=dict(name='Scénario défavorable'), line=dict(width=3, dash='dot'))
+        fig.update_traces(selector=dict(name='Scénario median'), line=dict(width=6, dash='solid'))
+        fig.update_traces(selector=dict(name='Scénario favorable'), line=dict(width=3, dash='dot'))
 
 
         # --- Layout ---
@@ -432,7 +432,7 @@ def display_strat_output(obj, ssobj, payload_strat, strat_output,debut=0):
             st.markdown("## Objectif Principal")
             st.markdown(f"### {obj}")
         with cols[1]:
-            st.markdown("## Sous Principal")
+            st.markdown("## Sous Objectif")
             st.markdown(f"### {ssobj}")
 
 
@@ -484,7 +484,7 @@ def display_strat_output(obj, ssobj, payload_strat, strat_output,debut=0):
         bestIndex    = best_element["attribut"]["bestVarIndex"]
         st.subheader("🏆 Meilleure Recommendation")
         with st.container():
-            st.markdown(f"### {best_element['variantesResult'][0]['metriques']['libVariante']}")
+            st.markdown(f"### {best_element['variantesResult'][bestIndex]['metriques']['libVariante']}")
             st.markdown(f"**Pourquoi cette recommendation?** {best_element['texteStrat']['description']}")
             
             metric_cols = st.columns(2)
@@ -520,7 +520,7 @@ def display_strat_output(obj, ssobj, payload_strat, strat_output,debut=0):
             }
             )
             fig = px.line(assetDif, x='index', y=["Scénario défavorable", "Scénario médian","Scénario favorable"],
-                title="Vos 3 scénarios d'évolution de votre patrimoine dans les années à venir",
+                title="L'impact mesuré sur la reco: vos 3 scénarios d'évolution de votre patrimoine dans les années à venir",
                 labels={'value': 'Montant (€)', 'variable': 'Scénarios'},
                 color_discrete_map={
                     'Scénario favorable': '#2E8B57',
@@ -536,7 +536,7 @@ def display_strat_output(obj, ssobj, payload_strat, strat_output,debut=0):
             # --- Layout ---
             fig.update_layout(
                 title={
-                    'text': "Vos 3 scénarios d'évolution de votre patrimoine dans les années à venir",
+                    'text': "L'impact (en delta) de votre patrimoine dans les années à venir",
                     'x': 0.5,
                     'xanchor': 'center',
                     'font': {'size': 16}

@@ -5,8 +5,8 @@ from helpers.auth import check_password
 from helpers import func
 from datetime import datetime
 
-# if not check_password():
-#     st.stop()
+if not check_password():
+    st.stop()
 
 st.title("♟️ Question 1 - KLEMO LIFE GAME")
 st.write("Vous avez 25 ans, un premier boulot et aucune connaissance en investissement.")
@@ -14,7 +14,7 @@ st.write("Pour débuter, quelle option choisissez-vous ?")
 
 # --- Step 1: Initialize session_state ---
 if "base_info_1" not in st.session_state:
-    st.session_state.base_info_1 = func.load_base_info("q1")
+    st.session_state.base_info_1 = func.load_base_info("q1_backup")
 
 # --- Step 2: Show editable section ---
 with st.expander("👤 Information", expanded=True):
@@ -105,7 +105,7 @@ with st.expander("📝 FORMULAIRE OBJECTIF", expanded=True):
             key="sous_objectif_select"
         )
     
-    paramObj = st.text_area(":black_nib: entrer des paramètres d'objectif (optionnel):",value='{"debut":"2029-10-31", "montantRegulier":400,"horizon":24}', height=200)
+    paramObj = st.text_area(":black_nib: entrer des paramètres d'objectif (optionnel):",value='{"debut":"2025-10-31", "montantRegulier":200,"horizon":20}', height=200)
     
 if st.button("LANCER SIMULATION RECOS KLEMO"):
     # Build the payload

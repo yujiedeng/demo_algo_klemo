@@ -1,4 +1,4 @@
-# 55 ans
+# 60 ans
 # Marié 2 enfants
 # RP acheté à 35 ans 
 # Emprunt RP remoboursé
@@ -7,7 +7,7 @@
 # Salaire 85000 € Brut Annuel iso 
 # fin : PEA 20k 
 #       livret 3k   
-#       PERO 30k
+#       PERO 50k
 #       PER 42k : Versement 375 par mois, jusqu'à 2045
 
 # envisage des retrait d'investissement 
@@ -22,8 +22,8 @@ from helpers.auth import check_password
 from helpers import func
 from datetime import datetime
 
-# if not check_password():
-#     st.stop()
+if not check_password():
+    st.stop()
 
 st.title("♟️ Question 5 - KLEMO LIFE GAME")
 st.write("Vous avez 60 ans")
@@ -31,7 +31,7 @@ st.write("Vous avez envie de sentir le vent dans vos cheveux et vous partez fair
 st.write("Comment financer votre épopée ?")
 
 # --- Step 1: Initialize session_state ---
-if "base_info_5_5" not in st.session_state:
+if "base_info_5" not in st.session_state:
     st.session_state.base_info_5 = func.load_base_info("q5")
 
 # --- Step 2: Show editable section ---
@@ -44,21 +44,27 @@ with st.expander("👤 Information", expanded=True):
         charge = st.number_input("Mes dépenses courantes mensuelles (€)", min_value=0, step=100, value=int(st.session_state.base_info_5["Cashflow"]["PatCashflowDetail"][0]["depensesCourantes"]))
 
     with col2:
-        loyer = st.number_input("Mon loyer mensuel (€)", min_value=0, step=100, value=int(st.session_state.base_info_5["Cashflow"]["PatCashflowDetail"][0]["loyerHabitationPrincipale"]))
-        emprunt = st.number_input("Mon emprunt étudiant (€)", min_value=0, step=1000, value=int(st.session_state.base_info_5["Emprunt"]["PatEmpruntDetail"][0]["montantRestantDu"]))
+        immo = st.number_input("La Valo de mon RP (€)", min_value=0, step=100, value=int(st.session_state.base_info_5["Immo"]["PatImmoDetail"][0]["value"]))
+        salaire = st.number_input("Mon salaire brut annuel (€)", min_value=0, step=1000, value=int(st.session_state.base_info_5["Cashflow"]["PatCashflowDetail"][0]["revenusActivite"])) 
+        fin = st.number_input("Mon épargne Livret A (€)", min_value=0, step=1000, value=int(st.session_state.base_info_5["Fin"]["PatFinDetail"][0]["value"]))
 
     with col3:
-        fin = st.number_input("Mon épargne Livret A (€)", min_value=0, step=1000, value=int(st.session_state.base_info_5["Fin"]["PatFinDetail"][0]["value"]))
-        salaire = st.number_input("Mon salaire brut annuel (€)", min_value=0, step=1000, value=int(st.session_state.base_info_5["Cashflow"]["PatCashflowDetail"][0]["revenusActivite"])) 
-    
+        fin_2 = st.number_input("Mon investissement PEA (€)", min_value=0, step=1000, value=int(st.session_state.base_info_5["Fin"]["PatFinDetail"][1]["value"]))
+        fin_3 = st.number_input("Mon investissement AV (€)", min_value=0, step=1000, value=int(st.session_state.base_info_5["Fin"]["PatFinDetail"][2]["value"]))
+        fin_4 = st.number_input("Mon épargne PER (€)", min_value=0, step=1000, value=int(st.session_state.base_info_5["Fin"]["PatFinDetail"][3]["value"]))
+        
     # Save modifications
     if st.button("💾 Enregistrer"):
         st.session_state.base_info_5["Client"]["PatClientDetail"][0]["dateNaissance"] = f"{datetime.today().year - age}-01-01"
         st.session_state.base_info_5["Client"]["PatClientDetail"][0]["typeUnion"] = situation
-        st.session_state.base_info_5["Emprunt"]["PatEmpruntDetail"][0]["montantRestantDu"] = emprunt
-        st.session_state.base_info_5["Emprunt"]["PatEmpruntDetail"][0]["quotePart"] = emprunt
-        st.session_state.base_info_5["Fin"]["PatFinDetail"][0]["value"] = fin
-        st.session_state.base_info_5["Fin"]["PatFinDetail"][0]["quotePart"] = fin
+        st.session_state.base_info_5["Fin"]["PatFinDetail"][0]["value"] = fin_1
+        st.session_state.base_info_5["Fin"]["PatFinDetail"][0]["quotePart"] = fin_1
+        st.session_state.base_info_5["Fin"]["PatFinDetail"][1]["value"] = fin_2
+        st.session_state.base_info_5["Fin"]["PatFinDetail"][1]["quotePart"] = fin_2
+        st.session_state.base_info_5["Fin"]["PatFinDetail"][2]["value"] = fin_3
+        st.session_state.base_info_5["Fin"]["PatFinDetail"][2]["quotePart"] = fin_3
+        st.session_state.base_info_5["Fin"]["PatFinDetail"][2]["value"] = fin_4
+        st.session_state.base_info_5["Fin"]["PatFinDetail"][2]["quotePart"] = fin_4
         st.session_state.base_info_5["Cashflow"]["PatCashflowDetail"][0]["loyerHabitationPrincipale"] = loyer
         st.session_state.base_info_5["Cashflow"]["PatCashflowDetail"][0]["depensesCourantes"] = charge
         st.session_state.base_info_5["Cashflow"]["PatCashflowDetail"][0]["revenusActivite"] = salaire
@@ -123,7 +129,7 @@ with st.expander("📝 FORMULAIRE OBJECTIF", expanded=True):
             key="sous_objectif_select"
         )
     
-    paramObj = st.text_area(":black_nib: entrer des paramètres d'objectif (optionnel):",value='{"debut":"2029-10-31", "montantRegulier":400,"horizon":24}', height=200)
+    paramObj = st.text_area(":black_nib: entrer des paramètres d'objectif (optionnel):",value='{}', height=200)
     
 if st.button("LANCER SIMULATION RECOS KLEMO"):
     # Build the payload
