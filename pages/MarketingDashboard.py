@@ -28,7 +28,11 @@ df_weekly["verified_pct"] = round(df_weekly["verified"] / df_weekly["total"] * 1
 
 
 # --- Streamlit App ---
-# st.set_page_config(page_title="Marketing Analysis Dashboard", layout="wide")
+st.set_page_config(
+    page_title="My Dashboard",
+    layout="wide",   # ✅ Enables full-width content area
+    initial_sidebar_state="collapsed"
+)
 st.title("KLEMO Reporting Analyse Marketing")
 st.write(f"Données mises à jour le {modified_date}")
 
@@ -45,11 +49,7 @@ df_daily = (
 )
 df_daily["verified_pct"] = round(df_daily["verified"] / df_daily["total"] * 100, 2)
 
-st.set_page_config(
-    page_title="My Dashboard",
-    layout="wide",   # ✅ Enables full-width content area
-    initial_sidebar_state="collapsed"
-)
+
 
 st.subheader("📬 Partie I: Focus Téléchargement et Vérification Mail")
 # 2️⃣ Build dual-axis chart
