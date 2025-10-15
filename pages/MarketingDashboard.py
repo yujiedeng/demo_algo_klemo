@@ -153,15 +153,15 @@ text_labels = [
     f"{counts[1]}<br>{(counts[1] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[1]} ({losses_pct[1]:.1f}%)",
     f"{counts[2]}<br>{(counts[2] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[2]} ({losses_pct[2]:.1f}%)",
     f"{counts[3]}<br>{(counts[3] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[3]} ({losses_pct[3]:.1f}%)",
-    f"{counts[4]}<br>{(counts[4] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[4]} ({losses_pct[3]:.1f}%)",
-    f"{counts[5]}<br>{(counts[5] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[5]} ({losses_pct[3]:.1f}%)",
-    f"{counts[6]}<br>{(counts[6] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[6]} ({losses_pct[3]:.1f}%)",
-    f"{counts[7]}<br>{(counts[7] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[7]} ({losses_pct[3]:.1f}%)",
-    f"{counts[8]}<br>{(counts[8] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[8]} ({losses_pct[3]:.1f}%)",
-    f"{counts[9]}<br>{(counts[9] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[9]} ({losses_pct[3]:.1f}%)",
-    f"{counts[10]}<br>{(counts[10] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[10]} ({losses_pct[3]:.1f}%)",
-    f"{counts[11]}<br>{(counts[11] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[11]} ({losses_pct[3]:.1f}%)",
-    f"{counts[12]}<br>{(counts[12] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[12]} ({losses_pct[3]:.1f}%)"
+    f"{counts[4]}<br>{(counts[4] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[4]} ({losses_pct[4]:.1f}%)",
+    f"{counts[5]}<br>{(counts[5] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[5]} ({losses_pct[5]:.1f}%)",
+    f"{counts[6]}<br>{(counts[6] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[6]} ({losses_pct[6]:.1f}%)",
+    f"{counts[7]}<br>{(counts[7] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[7]} ({losses_pct[7]:.1f}%)",
+    f"{counts[8]}<br>{(counts[8] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[8]} ({losses_pct[8]:.1f}%)",
+    f"{counts[9]}<br>{(counts[9] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[9]} ({losses_pct[9]:.1f}%)",
+    f"{counts[10]}<br>{(counts[10] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[10]} ({losses_pct[10]:.1f}%)",
+    f"{counts[11]}<br>{(counts[11] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[11]} ({losses_pct[11]:.1f}%)",
+    f"{counts[12]}<br>{(counts[12] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[12]} ({losses_pct[12]:.1f}%)"
 
 ]
 
