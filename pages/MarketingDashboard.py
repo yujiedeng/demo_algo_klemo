@@ -7,8 +7,8 @@ from datetime import datetime
 import os 
 from helpers.auth import check_password
 
-# if not check_password():
-#     st.stop()
+if not check_password():
+    st.stop()
 
 df = pd.read_parquet(f"dataMarket/downloads.parquet")
 
@@ -44,6 +44,12 @@ df_daily = (
                .sum()
 )
 df_daily["verified_pct"] = round(df_daily["verified"] / df_daily["total"] * 100, 2)
+
+st.set_page_config(
+    page_title="My Dashboard",
+    layout="wide",   # ✅ Enables full-width content area
+    initial_sidebar_state="collapsed"
+)
 
 st.subheader("📬 Partie I: Focus Téléchargement et Vérification Mail")
 # 2️⃣ Build dual-axis chart
@@ -89,6 +95,9 @@ fig_daily.update_layout(
     barmode="stack",
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
     template="plotly_white",
+    autosize=True,
+    height=None,  # Let Streamlit/Plotly expand naturally
+    margin=dict(l=0, r=0, t=30, b=0)
 )
 
 st.plotly_chart(fig_daily, use_container_width=True)
