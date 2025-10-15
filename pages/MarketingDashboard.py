@@ -7,12 +7,14 @@ from datetime import datetime
 import os 
 from helpers.auth import check_password
 
-if not check_password():
-    st.stop()
+# if not check_password():
+#     st.stop()
 
-date_query = datetime.now().strftime("%Y-%m-%d_%H")+"H"
+df = pd.read_parquet(f"dataMarket/downloads.parquet")
 
-df = pd.read_parquet(f"dataMarket/downloads_daily.parquet")
+mtime = os.path.getmtime("dataMarket/downloads.parquet")
+modified_date = datetime.fromtimestamp(mtime)
+
 df["date"] = pd.to_datetime(df["created_at_date"])
 df["verified_pct"] = round(df["verified"] / df["total"] * 100, 2)
 
@@ -24,9 +26,11 @@ df_weekly = (
 )
 df_weekly["verified_pct"] = round(df_weekly["verified"] / df_weekly["total"] * 100, 2)
 
+
 # --- Streamlit App ---
-st.set_page_config(page_title="Marketing Analysis Dashboard", layout="wide")
-st.title("📬 Marketing Funnel Analysis Dashboard")
+# st.set_page_config(page_title="Marketing Analysis Dashboard", layout="wide")
+st.title("KLEMO Reporting Analyse Marketing")
+st.write(f"Données mises à jour le {modified_date}")
 
 # Calendar filter
 min_date, max_date = df["date"].min(), df["date"].max()
@@ -41,6 +45,7 @@ df_daily = (
 )
 df_daily["verified_pct"] = round(df_daily["verified"] / df_daily["total"] * 100, 2)
 
+st.subheader("📬 Partie I: Focus Téléchargement et Vérification Mail")
 # 2️⃣ Build dual-axis chart
 fig_daily = go.Figure()
 
@@ -106,3 +111,163 @@ st.subheader("📊 Key Metrics")
 col1, col2 = st.columns(2)
 col1.metric("Total Verified", int(df_filtered["verified"].sum()))
 col2.metric("Average Verification Rate", f"{df_filtered['verified_pct'].mean():.2f}%")
+
+
+st.subheader("📬 Partie II: Focus Analyse Conversion")
+st.subheader("⏳️ Analyse Funnel: toute période confondue")
+
+df_ana = pd.read_parquet(f"dataMarket/analysis.parquet")
+stages = ['Total Users', 'Verified Email', 'Started Chat', 'Ended Chat','Bilan Generated', 'Answered Target Qst', 'Answered Knowledge Qst', 'Answered Risk Qst', 'Answered ESG Qst', 'Signed Letter of Mission', 'Generated Recommendations', 'KYC Approved', 'Consulted Recommendations']
+counts = [
+    len(df_ana), 
+    df_ana['step_1_mail_verified'].sum(),  
+    df_ana['step_2_chat_started'].sum(),   
+    df_ana['step_3_chat_end'].sum(),
+    df_ana['step_4_bilan'].sum(),
+    df_ana['step_5_qst_target'].sum(),
+    df_ana['step_6_qst_fin'].sum(),
+    df_ana['step_7_qst_risk'].sum(),
+    df_ana['step_8_esg'].sum(),
+    df_ana['step_9_lettre_mission'].sum(),
+    df_ana['step_10_generated_reco'].sum(),
+    df_ana['step_11_kyc'].sum(),
+    df_ana['step_12_reco_consulted'].sum()
+]
+
+# Calculate losses (absolute and percentage drop from previous step)
+losses_abs = [0] + [counts[i-1] - counts[i] for i in range(1, len(counts))]
+losses_pct = [0] + [(losses_abs[i] / counts[i-1] * 100) if counts[i-1] > 0 else 0 for i in range(1, len(counts))]
+
+# Create text labels with counts, % of total, and loss info
+text_labels = [
+    f"{counts[0]}<br>{(counts[0] / counts[0] * 100):.1f}% of total<br>(Start)",
+    f"{counts[1]}<br>{(counts[1] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[1]} ({losses_pct[1]:.1f}%)",
+    f"{counts[2]}<br>{(counts[2] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[2]} ({losses_pct[2]:.1f}%)",
+    f"{counts[3]}<br>{(counts[3] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[3]} ({losses_pct[3]:.1f}%)",
+    f"{counts[4]}<br>{(counts[4] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[4]} ({losses_pct[3]:.1f}%)",
+    f"{counts[5]}<br>{(counts[5] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[5]} ({losses_pct[3]:.1f}%)",
+    f"{counts[6]}<br>{(counts[6] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[6]} ({losses_pct[3]:.1f}%)",
+    f"{counts[7]}<br>{(counts[7] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[7]} ({losses_pct[3]:.1f}%)",
+    f"{counts[8]}<br>{(counts[8] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[8]} ({losses_pct[3]:.1f}%)",
+    f"{counts[9]}<br>{(counts[9] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[9]} ({losses_pct[3]:.1f}%)",
+    f"{counts[10]}<br>{(counts[10] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[10]} ({losses_pct[3]:.1f}%)",
+    f"{counts[11]}<br>{(counts[11] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[11]} ({losses_pct[3]:.1f}%)",
+    f"{counts[12]}<br>{(counts[12] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[12]} ({losses_pct[3]:.1f}%)"
+
+]
+
+# Create the funnel plot using Plotly with enhanced text
+fig = go.Figure(data=[go.Funnel(
+    y=stages,
+    x=counts,
+    text=text_labels,
+    textinfo="text",  # Use custom text labels
+    marker={"color": ["#D5DBDB","#DAE3E5","#DFEAF0", "#EDE3D8","#AED6F1", "#CBD0D8","#A9DFBF", "#FAD7A0","#D5D2C7", "#F5B7B1", "#BB8FCE", "#7FB3D5", "#76D7C4"]},
+)])
+
+
+fig.update_layout(
+    title="Funnel Analysis: User Progression Through Steps (with Step Losses)",
+    title_x=0.5,
+    font_size=20,
+
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
+st.subheader("🧑‍🧑‍🧒 Analyse Cohort par semaine")
+
+cohort_stats = df_ana.groupby('cohort').agg({
+    'step_1_mail_verified': 'sum',
+    'step_2_chat_started': 'sum',
+    'step_3_chat_end': 'sum',
+    'step_4_bilan': 'sum',
+    'step_5_qst_target': 'sum',
+    'step_6_qst_fin': 'sum',
+    'step_7_qst_risk': 'sum',
+    'step_8_esg': 'sum',
+    'step_9_lettre_mission': 'sum',
+    'step_10_generated_reco': 'sum',
+    'step_11_kyc': 'sum',
+    'step_12_reco_consulted': 'sum'
+}).reset_index()
+
+# Add total cohort size
+cohort_stats['total'] = df_ana.groupby('cohort').size().values
+
+# Calculate percentages relative to cohort total (100% at Total)
+cohort_stats['%MailVerifie'] = (cohort_stats['step_1_mail_verified'] / cohort_stats['total'] * 100).round(1)
+cohort_stats['%DebutChat'] = (cohort_stats['step_2_chat_started'] / cohort_stats['total'] * 100).round(1)
+cohort_stats['%FinChat'] = (cohort_stats['step_3_chat_end'] / cohort_stats['total'] * 100).round(1)
+cohort_stats['%Bilan'] = (cohort_stats['step_4_bilan'] / cohort_stats['total'] * 100).round(1)
+cohort_stats['%QstObjectif'] = (cohort_stats['step_5_qst_target'] / cohort_stats['total'] * 100).round(1)
+cohort_stats['%QstFinance'] = (cohort_stats['step_6_qst_fin'] / cohort_stats['total'] * 100).round(1)
+cohort_stats['%QstRisque'] = (cohort_stats['step_7_qst_risk'] / cohort_stats['total'] * 100).round(1)
+cohort_stats['%QstESG'] = (cohort_stats['step_8_esg'] / cohort_stats['total'] * 100).round(1)
+cohort_stats['%SignLettreMission'] = (cohort_stats['step_9_lettre_mission'] / cohort_stats['total'] * 100).round(1)
+cohort_stats['%RecoGenere'] = (cohort_stats['step_10_generated_reco'] / cohort_stats['total'] * 100).round(1)
+cohort_stats['%KYC'] = (cohort_stats['step_11_kyc'] / cohort_stats['total'] * 100).round(1)
+cohort_stats['%RecoConsulte'] = (cohort_stats['step_12_reco_consulted'] / cohort_stats['total'] * 100).round(1)
+
+# Prepare data for line plot: melt to long format
+# Prepare data for line plot: melt to long format
+steps = ['Total', 'Verified Email', 'Started Chat', 'Ended Chat', 'Bilan Generated', 'Answered Target Qst', 'Answered Knowledge Qst', 'Answered Risk Qst', 'Answered ESG Qst', 'Signed Letter of Mission', 'Generated Recommendations', 'KYC Approved', 'Consulted Recommendations']
+melted = cohort_stats.melt(
+    id_vars=['cohort'],
+    value_vars=['total', '%MailVerifie', '%DebutChat', '%FinChat','%Bilan','%QstObjectif','%QstFinance','%QstRisque','%QstESG','%SignLettreMission','%RecoGenere','%KYC','%RecoConsulte'],
+    var_name='step_raw',
+    value_name='value'
+)
+
+# Map step_raw to actual step names
+step_mapping = {
+    'total': 'Total',
+    '%MailVerifie': 'Verified Email',
+    '%DebutChat': 'Started Chat',
+    '%FinChat': 'Ended Chat',
+    '%Bilan': 'Bilan Generated',
+    '%QstObjectif': 'Answered Target Qst',
+    '%QstFinance': 'Answered Knowledge Qst',
+    '%QstRisque': 'Answered Risk Qst',
+    '%QstESG': 'Answered ESG Qst',
+    '%SignLettreMission': 'Signed Letter of Mission',
+    '%RecoGenere': 'Generated Recommendations',
+    '%KYC': 'KYC Approved',
+    '%RecoConsulte': 'Consulted Recommendations'
+
+}
+melted['step'] = melted['step_raw'].map(step_mapping)
+
+# Set Total to 100% (override the count value)
+melted.loc[melted['step_raw'] == 'total', 'value'] = 100
+
+# Select relevant columns
+melted = melted[['cohort', 'step', 'value']]
+
+# Create the line plot using Plotly
+fig = go.Figure()
+
+for cohort in melted['cohort'].unique():
+    cohort_data = melted[melted['cohort'] == cohort]
+    fig.add_trace(go.Scatter(
+        x=cohort_data['step'],
+        y=cohort_data['value'],
+        mode='lines+markers',
+        name=cohort,
+        line=dict(width=2),
+        marker=dict(size=8)
+    ))
+
+fig.update_layout(
+    title="Cohort Funnel Analysis: Conversion Rates by Step (Overlapping Lines)",
+    title_x=0.5,
+    xaxis_title="Steps",
+    yaxis_title="Conversion Rate (%)",
+    yaxis=dict(range=[0, 100]),
+    hovermode='x unified',
+    font_size=12,
+    legend_title="Cohorts"
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
