@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 from datetime import datetime
 import os 
 from helpers.auth import check_password
+import pytz
 
 if not check_password():
     st.stop()
@@ -13,7 +14,15 @@ if not check_password():
 df = pd.read_parquet(f"dataMarket/downloads.parquet")
 
 mtime = os.path.getmtime("dataMarket/downloads.parquet")
-modified_date = datetime.fromtimestamp(mtime)
+
+# Create a timezone-aware datetime in UTC
+utc_tz = pytz.UTC
+utc_dt = str(utc_tz.localize(datetime.fromtimestamp(mtime)))[:19]
+
+# # Convert to CET/CEST (Europe/Paris handles DST automatically)
+# paris_tz = pytz.timezone("Europe/Paris")
+# cet_dt = utc_dt.astimezone(paris_tz)
+
 
 df["date"] = pd.to_datetime(df["created_at_date"])
 df["verified_pct"] = round(df["verified"] / df["total"] * 100, 2)
@@ -34,7 +43,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 st.title("KLEMO Reporting Analyse Marketing")
-st.write(f"Données mises à jour le {modified_date}")
+st.write(f"Données mises à jour le {utc_dt}")
 
 # Calendar filter
 min_date, max_date = df["date"].min(), df["date"].max()
