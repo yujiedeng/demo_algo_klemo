@@ -17,11 +17,11 @@ mtime = os.path.getmtime("dataMarket/downloads.parquet")
 
 # Create a timezone-aware datetime in UTC
 utc_tz = pytz.UTC
-utc_dt = str(utc_tz.localize(datetime.fromtimestamp(mtime)))[:19]
+utc_dt = utc_tz.localize(datetime.fromtimestamp(mtime))
 
 # # Convert to CET/CEST (Europe/Paris handles DST automatically)
-# paris_tz = pytz.timezone("Europe/Paris")
-# cet_dt = utc_dt.astimezone(paris_tz)
+paris_tz = pytz.timezone("Europe/Paris")
+cet_dt = str(utc_dt.astimezone(paris_tz))[:19]
 
 
 df["date"] = pd.to_datetime(df["created_at_date"])
