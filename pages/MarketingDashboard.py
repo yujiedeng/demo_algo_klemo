@@ -43,7 +43,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 st.title("KLEMO Reporting Analyse Marketing")
-st.write(f"Données mises à jour le {utc_dt}")
+st.write(f"Données mises à jour le {cet_dt}")
 
 # Calendar filter
 min_date, max_date = df["date"].min(), df["date"].max()
