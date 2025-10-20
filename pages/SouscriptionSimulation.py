@@ -8,8 +8,9 @@ import boto3
 from requests_aws4auth import AWS4Auth
 import pandas as pd
 import plotly.express as px
-# if not check_password():
-#     st.stop()
+
+if not check_password():
+    st.stop()
 
 aws_access_key, aws_secret_key, aws_region = func.get_aws_credentials()
 session     = boto3.Session(aws_access_key_id=aws_access_key,
