@@ -93,6 +93,7 @@ auth = AWS4Auth(
 FILL_SCORE_URL   = "https://algo.yde.core.techklemo.com/v1/fill-score"
 PROJ_URL         = "https://algo.yde.core.techklemo.com/v1/proj"
 STRAT_URL        = "https://algo.yde.core.techklemo.com/v1"
+SOUSCRIPTION_URL = "https://algo.yde.core.techklemo.com/v1/souscription"
 STRAT_INIT_URL   = f"{STRAT_URL}/strat_init"
 
 OBJECTIF_CHOICES = {
