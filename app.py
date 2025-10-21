@@ -172,7 +172,28 @@ def main():
             # display_customer_info(json_data)
 
             # Display the JSON data in a text area
-        st.text_area("Charged Payload FastPat", json.dumps(st.session_state.input_json, indent=2), height=300, key="fastpat_content")
+
+        mode = st.radio(
+            "Source des données pour la requête :",
+            ["Utiliser la sortie précédente", "Entrer un JSON manuellement"]
+        )
+
+        # --- Display text area depending on mode ---
+        if mode == "Entrer un JSON manuellement":
+            # Show a blank (or last known) JSON to edit
+            default_value = json.dumps(st.session_state.get("input_json", {}), indent=2)
+            fs_content = st.text_area(
+                ":black_nib: Entrer Infos JSON :",
+                value=default_value,
+                height=200,
+                key="fs_content"
+            )
+        else:
+            # Use previous JSON directly
+            fs_content = json.dumps(st.session_state.get("input_json", {}), indent=2)
+            st.code(fs_content, language="json")
+
+        # st.text_area("Charged Payload FastPat", json.dumps(st.session_state.input_json, indent=2), height=300, key="fastpat_content")
 
         # Button to send the request
         if st.button("Envoyer une requête à l'API FillScore"):
@@ -232,12 +253,35 @@ def main():
 
     with st.expander("📈 PART 2 : API Synthèse Patrimoniale (BilanPat)", expanded=True):
     # Display the full API response in another text area
+
         if st.session_state.json_proj: 
             # Text area for the next API call
             st.subheader("API de Projection d'un bilan patrimonial")
             # st.text_area("Payload for API Bilan Pat", json.dumps(json_proj, indent=2), height=300, key="bilanpat_content")
-            st.text_area(":black_nib: Entrer Infos:", value=json.dumps(st.session_state.json_proj, indent=2),height = 200, key = "bilanpat_content")
-            # json_proj = json.loads(json_proj)
+            # st.text_area(":black_nib: Entrer Infos:", value=json.dumps(st.session_state.json_proj, indent=2),height = 200, key = "bilanpat_content")
+                
+            mode_bilan = st.radio(
+                "Source des données pour la Bilan Pat :",
+                ["A - Utiliser la sortie précédente", "B - Entrer un JSON manuellement"]
+            )
+
+            # --- Display text area depending on mode ---
+            if mode_bilan == "B - Entrer un JSON manuellement":
+                # Show a blank (or last known) JSON to edit
+                default_value = json.dumps(st.session_state.get("json_proj", {}), indent=2)
+                bp_content = st.text_area(
+                    ":black_nib: Entrer Infos JSON :",
+                    value=default_value,
+                    height=200,
+                    key="bilan_default_content"
+                )
+            
+            else:
+                # Use previous JSON directly
+                bp_content = json.dumps(st.session_state.get("json_proj", {}), indent=2)
+                # st.code(bp_content, language="json")
+            st.session_state.json_proj = json.loads(bp_content)
+            
             if st.button("Envoyer une Requête à l'API BilanPat (Projection)"):
                 if st.session_state.json_proj: 
                     try:
