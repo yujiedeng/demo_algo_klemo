@@ -1,4 +1,6 @@
 import streamlit as st
+from streamlit_timeline import st_timeline
+
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -8,11 +10,10 @@ import os
 from helpers.auth import check_password
 import pytz
 
-if not check_password():
-    st.stop()
+# if not check_password():
+#     st.stop()
 
 df = pd.read_parquet(f"dataMarket/downloads.parquet")
-
 mtime = os.path.getmtime("dataMarket/downloads.parquet")
 
 # Create a timezone-aware datetime in UTC
@@ -111,6 +112,7 @@ fig_daily.update_layout(
 
 st.plotly_chart(fig_daily, use_container_width=True)
 
+
 # --- Weekly summary ---
 st.subheader("🗓️ Weekly Summary")
 
@@ -135,7 +137,7 @@ st.subheader("📬 Partie II: Focus Analyse Conversion")
 st.subheader("⏳️ Analyse Funnel: toute période confondue")
 
 df_ana = pd.read_parquet(f"dataMarket/analysis.parquet")
-stages = ['Total Users', 'Verified Email', 'Started Chat', 'Ended Chat','Bilan Generated', 'Answered Target Qst', 'Answered Knowledge Qst', 'Answered Risk Qst', 'Answered ESG Qst', 'Signed Letter of Mission', 'Generated Recommendations', 'KYC Approved', 'Consulted Recommendations']
+stages = ['Total Users', 'Verified Email', 'Started Chat', 'Ended Chat','Bilan Generated', 'Answered Target Qst', 'Answered Knowledge Qst', 'Answered Risk Qst', 'Answered ESG Qst', 'Begin Mission Letter', 'Signed Mission Letter ', 'Generated Recommendations', 'KYC Approved', 'Consulted Recommendations']
 counts = [
     len(df_ana), 
     df_ana['step_1_mail_verified'].sum(),  
@@ -147,6 +149,7 @@ counts = [
     df_ana['step_7_qst_risk'].sum(),
     df_ana['step_8_esg'].sum(),
     df_ana['step_9_lettre_mission'].sum(),
+    df_ana['step92_status_sign_signed'].sum(),
     df_ana['step_10_generated_reco'].sum(),
     df_ana['step_11_kyc'].sum(),
     df_ana['step_12_reco_consulted'].sum()
@@ -170,7 +173,8 @@ text_labels = [
     f"{counts[9]}<br>{(counts[9] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[9]} ({losses_pct[9]:.1f}%)",
     f"{counts[10]}<br>{(counts[10] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[10]} ({losses_pct[10]:.1f}%)",
     f"{counts[11]}<br>{(counts[11] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[11]} ({losses_pct[11]:.1f}%)",
-    f"{counts[12]}<br>{(counts[12] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[12]} ({losses_pct[12]:.1f}%)"
+    f"{counts[12]}<br>{(counts[12] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[12]} ({losses_pct[12]:.1f}%)",
+    f"{counts[13]}<br>{(counts[13] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[13]} ({losses_pct[13]:.1f}%)",
 
 ]
 
@@ -180,7 +184,7 @@ fig = go.Figure(data=[go.Funnel(
     x=counts,
     text=text_labels,
     textinfo="text",  # Use custom text labels
-    marker={"color": ["#D5DBDB","#DAE3E5","#DFEAF0", "#EDE3D8","#AED6F1", "#CBD0D8","#A9DFBF", "#FAD7A0","#D5D2C7", "#F5B7B1", "#BB8FCE", "#7FB3D5", "#76D7C4"]},
+    marker={"color": ["#D5DBDB","#DAE3E5","#DFEAF0", "#EDE3D8","#AED6F1", "#CBD0D8","#A9DFBF", "#FAD7A0","#D5D2C7","#D5F2C7", "#F5B7B1", "#BB8FCE", "#7FB3D5", "#76D7C4"]},
 )])
 
 
@@ -205,6 +209,7 @@ cohort_stats = df_ana.groupby('cohort').agg({
     'step_7_qst_risk': 'sum',
     'step_8_esg': 'sum',
     'step_9_lettre_mission': 'sum',
+    'step92_status_sign_signed':'sum',
     'step_10_generated_reco': 'sum',
     'step_11_kyc': 'sum',
     'step_12_reco_consulted': 'sum'
@@ -222,17 +227,17 @@ cohort_stats['%QstObjectif'] = (cohort_stats['step_5_qst_target'] / cohort_stats
 cohort_stats['%QstFinance'] = (cohort_stats['step_6_qst_fin'] / cohort_stats['total'] * 100).round(1)
 cohort_stats['%QstRisque'] = (cohort_stats['step_7_qst_risk'] / cohort_stats['total'] * 100).round(1)
 cohort_stats['%QstESG'] = (cohort_stats['step_8_esg'] / cohort_stats['total'] * 100).round(1)
-cohort_stats['%SignLettreMission'] = (cohort_stats['step_9_lettre_mission'] / cohort_stats['total'] * 100).round(1)
+cohort_stats['%StartedLettreMission'] = (cohort_stats['step_9_lettre_mission'] / cohort_stats['total'] * 100).round(1)
+cohort_stats['%SignLettreMission'] = (cohort_stats['step92_status_sign_signed'] / cohort_stats['total'] * 100).round(1)
 cohort_stats['%RecoGenere'] = (cohort_stats['step_10_generated_reco'] / cohort_stats['total'] * 100).round(1)
 cohort_stats['%KYC'] = (cohort_stats['step_11_kyc'] / cohort_stats['total'] * 100).round(1)
 cohort_stats['%RecoConsulte'] = (cohort_stats['step_12_reco_consulted'] / cohort_stats['total'] * 100).round(1)
 
 # Prepare data for line plot: melt to long format
-# Prepare data for line plot: melt to long format
-steps = ['Total', 'Verified Email', 'Started Chat', 'Ended Chat', 'Bilan Generated', 'Answered Target Qst', 'Answered Knowledge Qst', 'Answered Risk Qst', 'Answered ESG Qst', 'Signed Letter of Mission', 'Generated Recommendations', 'KYC Approved', 'Consulted Recommendations']
+steps = ['Total', 'Verified Email', 'Started Chat', 'Ended Chat', 'Bilan Generated', 'Answered Target Qst', 'Answered Knowledge Qst', 'Answered Risk Qst', 'Answered ESG Qst', 'Begin Letter Mission','Signed Mission Letter', 'Generated Recommendations', 'KYC Approved', 'Consulted Recommendations']
 melted = cohort_stats.melt(
     id_vars=['cohort'],
-    value_vars=['total', '%MailVerifie', '%DebutChat', '%FinChat','%Bilan','%QstObjectif','%QstFinance','%QstRisque','%QstESG','%SignLettreMission','%RecoGenere','%KYC','%RecoConsulte'],
+    value_vars=['total', '%MailVerifie', '%DebutChat', '%FinChat','%Bilan','%QstObjectif','%QstFinance','%QstRisque','%QstESG','%StartedLettreMission','%SignLettreMission','%RecoGenere','%KYC','%RecoConsulte'],
     var_name='step_raw',
     value_name='value'
 )
@@ -248,6 +253,7 @@ step_mapping = {
     '%QstFinance': 'Answered Knowledge Qst',
     '%QstRisque': 'Answered Risk Qst',
     '%QstESG': 'Answered ESG Qst',
+    '%StartedLettreMission': 'Begin Letter Mission',
     '%SignLettreMission': 'Signed Letter of Mission',
     '%RecoGenere': 'Generated Recommendations',
     '%KYC': 'KYC Approved',
@@ -289,3 +295,109 @@ fig.update_layout(
 
 st.plotly_chart(fig, use_container_width=True)
 
+result_bilan = df_ana.groupby("cohort", as_index=False)["step_4_bilan"].sum()
+result_reco = df_ana.groupby("cohort", as_index=False)["step_10_generated_reco"].sum()
+
+# Group by cohort and aggregate mean + median
+agg_df = df_ana.groupby("cohort", as_index=False).agg(
+    {
+        "delta_sec_eer_bilan": ["mean", "median"],
+        "delta_sec_eer_reco_generated": ["mean", "median"]
+    }
+)
+agg_df.columns = ["cohort", "temps_bilan_mean_sec", "temps_bilan_median_sec","temps_recoGenerated_mean_sec", "temps_recoGenerated_median_sec"]
+agg_df["moyenne_eer_bilan_J"] = round(agg_df["temps_bilan_mean_sec"] / (3600 * 24),3)
+agg_df["mediane_eer_bilan_J"] = round(agg_df["temps_bilan_median_sec"] / (3600 * 24),3)
+
+agg_df["moyenne_eer_recoG_J"] = round(agg_df["temps_recoGenerated_mean_sec"] / (3600 * 24),3)
+agg_df["mediane_eer_recoG_J"] = round(agg_df["temps_recoGenerated_median_sec"] / (3600 * 24),3)
+
+df_weekly["week_start"]=df_weekly["week_start"].astype(str)
+df_weekly = pd.merge(df_weekly, result_bilan, left_on="week_start", right_on="cohort", how="left")
+df_weekly = pd.merge(df_weekly, result_reco,  left_on="week_start", right_on="cohort", how="left")
+df_weekly = pd.merge(df_weekly, agg_df[["cohort","moyenne_eer_bilan_J","mediane_eer_bilan_J","moyenne_eer_recoG_J","mediane_eer_recoG_J"]], left_on="week_start", right_on="cohort", how="left")
+
+df_weekly.rename(columns={"total":"telechargement","verified":"mail_verified","step_4_bilan": "bilan_generated", "step_10_generated_reco": "reco_generated"}, inplace=True)
+
+df_weekly = df_weekly[["week_start","telechargement","mail_verified","bilan_generated","moyenne_eer_bilan_J","mediane_eer_bilan_J","reco_generated","moyenne_eer_recoG_J","mediane_eer_recoG_J"]]
+st.write('pour Anne')
+st.dataframe(df_weekly)
+
+# items = [
+#     {"id": 1, "content": "Marketing: Soirée Lancement", "start": "2025-10-09"},
+#     {"id": 2, "content": "Dev: Fix FireBase Mail à Vérifier", "start": "2025-03-15"},
+#     {"id": 3, "content": "Marketing: 1er Campagne ", "start": "2025-10-21"},
+# ]
+st.subheader("📅 Project Timeline")
+
+items = [
+    {"id": 1, "content": "°🥂 Soirée Lancement", "start": "2025-10-09T19:00:00", "end": "2025-10-10T00:00:00", "group": "1"},
+
+    {"id": 2, "content": "🛠️ Fix FireBase Mail à Vérifier", "start": "2025-10-13T11:00:00",  "group": "2"},
+
+    {"id": 3, "content": "🔊 Lancement 1er Campagne RS", "start": "2025-10-21T07:00:00", "group": "3"},
+
+    {"id": 4, "content": "💌 Newsletter Voxe", "start": "2025-10-21T07:00:00", "group": "3"}
+]
+
+# groups = [
+#     {"id": 1, "content": "Marketing: Soirée Lancement", "style": "color: black; background-color: #a9a9a98F;"},
+#     {"id": 2, "content": "Dev: Fix FireBase Mail à Vérifier", "style": "color: black; background-color: #a9a9a98F;"},
+#     {"id": 3, "content": "Marketing Lancement 1er Campagne", "style": "color: black; background-color: #a9a9a98F;"}
+# ]
+
+# timeline = st_timeline(items, groups=groups, options={"selectable": True, 
+#                                                       "multiselect": True, 
+#                                                       "zoomable": True, 
+#                                                       "verticalScroll": True, 
+#                                                       "stack": False,
+#                                                       "height": 200, 
+#                                                       "margin": {"axis": 5}, 
+#                                                       "groupHeightMode": "auto", 
+#                                                       "orientation": {"axis": "top", "item": "top"}})
+
+
+
+# Sample editable data
+if "events" not in st.session_state:
+    st.session_state.events = pd.DataFrame([
+        {"Date": items[0]["start"], "Event": items[0]["content"], "Type": "Marketing"},
+        {"Date": items[1]["start"], "Event": items[1]["content"], "Type": "Dev"},
+        {"Date": items[2]["start"], "Event": items[2]["content"], "Type": "Marketing"},
+        {"Date": items[3]["start"], "Event": items[3]["content"], "Type": "Marketing"}
+    ])
+
+# Editable table
+edited_df = st.data_editor(st.session_state.events, num_rows="dynamic", use_container_width=True)
+
+# Save edits to session state
+st.session_state.events = edited_df
+
+# Ensure date column is datetime
+edited_df["Date"] = pd.to_datetime(edited_df["Date"], errors="coerce")
+
+# Drop invalid dates
+timeline_df = edited_df.dropna(subset=["Date"])
+
+if not timeline_df.empty:
+    # Plotly timeline chart
+    fig = px.scatter(
+        timeline_df,
+        x="Date",
+        y="Event",
+        color="Type",
+        hover_data=["Event", "Date", "Type"],
+        size_max=20,
+        height=400
+    )
+
+    fig.update_layout(
+        yaxis=dict(autorange="reversed"),  # So earliest events on top
+        xaxis_title="Date",
+        yaxis_title="Event",
+        showlegend=True
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+else:
+    st.warning("No valid events to display. Make sure all dates are valid.")
