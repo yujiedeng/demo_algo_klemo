@@ -175,7 +175,6 @@ text_labels = [
     f"{counts[11]}<br>{(counts[11] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[11]} ({losses_pct[11]:.1f}%)",
     f"{counts[12]}<br>{(counts[12] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[12]} ({losses_pct[12]:.1f}%)",
     f"{counts[13]}<br>{(counts[13] / counts[0] * 100):.1f}% of total<br>Loss: {losses_abs[13]} ({losses_pct[13]:.1f}%)",
-
 ]
 
 # Create the funnel plot using Plotly with enhanced text
@@ -317,9 +316,9 @@ df_weekly = pd.merge(df_weekly, result_bilan, left_on="week_start", right_on="co
 df_weekly = pd.merge(df_weekly, result_reco,  left_on="week_start", right_on="cohort", how="left")
 df_weekly = pd.merge(df_weekly, agg_df[["cohort","moyenne_eer_bilan_J","mediane_eer_bilan_J","moyenne_eer_recoG_J","mediane_eer_recoG_J"]], left_on="week_start", right_on="cohort", how="left")
 
-df_weekly.rename(columns={"total":"telechargement","verified":"mail_verified","step_4_bilan": "bilan_generated", "step_10_generated_reco": "reco_generated"}, inplace=True)
+df_weekly.rename(columns={"total":"inscrits","verified":"mail_verified","step_4_bilan": "bilan_generated", "step_10_generated_reco": "reco_generated"}, inplace=True)
 
-df_weekly = df_weekly[["week_start","telechargement","mail_verified","bilan_generated","moyenne_eer_bilan_J","mediane_eer_bilan_J","reco_generated","moyenne_eer_recoG_J","mediane_eer_recoG_J"]]
+df_weekly = df_weekly[["week_start","inscrits","mail_verified","bilan_generated","moyenne_eer_bilan_J","mediane_eer_bilan_J","reco_generated","moyenne_eer_recoG_J","mediane_eer_recoG_J"]]
 st.write('pour Anne')
 st.dataframe(df_weekly)
 
