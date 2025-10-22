@@ -61,7 +61,7 @@ df_daily["verified_pct"] = round(df_daily["verified"] / df_daily["total"] * 100,
 
 
 
-st.subheader("📬 Partie I: Focus Téléchargement et Vérification Mail")
+st.subheader("📬 Partie I: Focus Inscriptions et Vérification Mail")
 # 2️⃣ Build dual-axis chart
 fig_daily = go.Figure()
 
@@ -94,7 +94,7 @@ fig_daily.add_trace(go.Scatter(
 fig_daily.update_layout(
     title="Daily Verification Funnel (Counts + %)",
     xaxis_title="Date",
-    yaxis_title="Number of Users",
+    yaxis_title="Nombre d'inscriptions",
     yaxis2=dict(
         title="Verification Rate (%)",
         overlaying="y",
@@ -137,7 +137,7 @@ st.subheader("📬 Partie II: Focus Analyse Conversion")
 st.subheader("⏳️ Analyse Funnel: toute période confondue")
 
 df_ana = pd.read_parquet(f"dataMarket/analysis.parquet")
-stages = ['Total Users', 'Verified Email', 'Started Chat', 'Ended Chat','Bilan Generated', 'Answered Target Qst', 'Answered Knowledge Qst', 'Answered Risk Qst', 'Answered ESG Qst', 'Begin Mission Letter', 'Signed Mission Letter ', 'Generated Recommendations', 'KYC Approved', 'Consulted Recommendations']
+stages = ['Total Inscrits', 'Verified Email', 'Started Chat', 'Ended Chat','Bilan Generated', 'Answered Target Qst', 'Answered Knowledge Qst', 'Answered Risk Qst', 'Answered ESG Qst', 'Begin Mission Letter', 'Signed Mission Letter ', 'Generated Recommendations', 'KYC Approved', 'Consulted Recommendations']
 counts = [
     len(df_ana), 
     df_ana['step_1_mail_verified'].sum(),  
@@ -244,7 +244,7 @@ melted = cohort_stats.melt(
 
 # Map step_raw to actual step names
 step_mapping = {
-    'total': 'Total',
+    'total': 'Total Inscrits',
     '%MailVerifie': 'Verified Email',
     '%DebutChat': 'Started Chat',
     '%FinChat': 'Ended Chat',
@@ -331,13 +331,13 @@ st.dataframe(df_weekly)
 st.subheader("📅 Project Timeline")
 
 items = [
-    {"id": 1, "content": "°🥂 Soirée Lancement", "start": "2025-10-09T19:00:00", "end": "2025-10-10T00:00:00", "group": "1"},
+    {"id": 1, "content": "🥂 Soirée Lancement", "start": "2025-10-09T19:00:00", "end": "2025-10-10T00:00:00", "group": "1"},
 
     {"id": 2, "content": "🛠️ Fix FireBase Mail à Vérifier", "start": "2025-10-13T11:00:00",  "group": "2"},
 
     {"id": 3, "content": "🔊 Lancement 1er Campagne RS", "start": "2025-10-21T07:00:00", "group": "3"},
 
-    {"id": 4, "content": "💌 Newsletter Voxe", "start": "2025-10-21T07:00:00", "group": "3"}
+    {"id": 4, "content": "💌 Newsletter Voxe", "start": "2025-10-21T07:00:00", "group": "4"}
 ]
 
 # groups = [
