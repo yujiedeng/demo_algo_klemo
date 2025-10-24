@@ -293,6 +293,7 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig, use_container_width=True)
+st.write("Attention: etape %Ansewered Target Qst correspond à deux étapes: %Redirection vers page Reco (Target) + %Fin de Questionnaire Target")
 
 result_bilan = df_ana.groupby("cohort", as_index=False)["step_4_bilan"].sum()
 result_reco = df_ana.groupby("cohort", as_index=False)["step_10_generated_reco"].sum()
