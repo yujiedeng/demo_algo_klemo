@@ -337,25 +337,12 @@ items = [
 
     {"id": 3, "content": "🔊 Lancement 1er Campagne RS", "start": "2025-10-21T07:00:00", "group": "3"},
 
-    {"id": 4, "content": "💌 Newsletter Voxe", "start": "2025-10-21T07:00:00", "group": "4"}
+    {"id": 4, "content": "💌 Newsletter Voxe", "start": "2025-10-21T07:00:00", "group": "4"},
+    
+    {"id": 5, "content": "🛠️ Fix Bug Chat SSO", "start": "2025-10-28T17:00:00", "end": "2025-10-29T13:00:00", "group": "5"},
+
+    {"id": 6, "content": "💌 Newsletter II Voxe", "start": "2025-10-29T06:00:00", "group": "6"}
 ]
-
-# groups = [
-#     {"id": 1, "content": "Marketing: Soirée Lancement", "style": "color: black; background-color: #a9a9a98F;"},
-#     {"id": 2, "content": "Dev: Fix FireBase Mail à Vérifier", "style": "color: black; background-color: #a9a9a98F;"},
-#     {"id": 3, "content": "Marketing Lancement 1er Campagne", "style": "color: black; background-color: #a9a9a98F;"}
-# ]
-
-# timeline = st_timeline(items, groups=groups, options={"selectable": True, 
-#                                                       "multiselect": True, 
-#                                                       "zoomable": True, 
-#                                                       "verticalScroll": True, 
-#                                                       "stack": False,
-#                                                       "height": 200, 
-#                                                       "margin": {"axis": 5}, 
-#                                                       "groupHeightMode": "auto", 
-#                                                       "orientation": {"axis": "top", "item": "top"}})
-
 
 
 # Sample editable data
@@ -364,7 +351,9 @@ if "events" not in st.session_state:
         {"Date": items[0]["start"], "Event": items[0]["content"], "Type": "Marketing"},
         {"Date": items[1]["start"], "Event": items[1]["content"], "Type": "Dev"},
         {"Date": items[2]["start"], "Event": items[2]["content"], "Type": "Marketing"},
-        {"Date": items[3]["start"], "Event": items[3]["content"], "Type": "Marketing"}
+        {"Date": items[3]["start"], "Event": items[3]["content"], "Type": "Marketing"},
+        {"Date": items[4]["start"], "Event": items[4]["content"], "Type": "Dev"},
+        {"Date": items[5]["start"], "Event": items[5]["content"], "Type": "Marketing"}
     ])
 
 # Editable table
