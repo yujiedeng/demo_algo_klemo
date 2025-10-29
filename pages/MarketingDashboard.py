@@ -348,12 +348,12 @@ items = [
 # Sample editable data
 if "events" not in st.session_state:
     st.session_state.events = pd.DataFrame([
-        {"Date": items[0]["start"], "Event": items[0]["content"], "Type": "Marketing"},
-        {"Date": items[1]["start"], "Event": items[1]["content"], "Type": "Dev"},
-        {"Date": items[2]["start"], "Event": items[2]["content"], "Type": "Marketing"},
-        {"Date": items[3]["start"], "Event": items[3]["content"], "Type": "Marketing"},
-        {"Date": items[4]["start"], "Event": items[4]["content"], "Type": "Dev"},
-        {"Date": items[5]["start"], "Event": items[5]["content"], "Type": "Marketing"}
+        {"Start": items[0]["start"], "End": items[0]["end"], "Event": items[0]["content"], "Type": "Marketing"},
+        {"Start": items[1]["start"], "Event": items[1]["content"], "Type": "Dev"},
+        {"Start": items[2]["start"], "Event": items[2]["content"], "Type": "Marketing"},
+        {"Start": items[3]["start"], "Event": items[3]["content"], "Type": "Marketing"},
+        {"Start": items[4]["start"], "End": items[4]["end"], "Event": items[4]["content"], "Type": "Dev"},
+        {"Start": items[5]["start"], "Event": items[5]["content"], "Type": "Marketing"}
     ])
 
 # Editable table
