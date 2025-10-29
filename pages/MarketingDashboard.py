@@ -363,26 +363,26 @@ edited_df = st.data_editor(st.session_state.events, num_rows="dynamic", use_cont
 st.session_state.events = edited_df
 
 # Ensure date column is datetime
-edited_df["Date"] = pd.to_datetime(edited_df["Date"], errors="coerce")
+edited_df["Start"] = pd.to_datetime(edited_df["Start"], errors="coerce")
 
 # Drop invalid dates
-timeline_df = edited_df.dropna(subset=["Date"])
+timeline_df = edited_df.dropna(subset=["Start"])
 
 if not timeline_df.empty:
     # Plotly timeline chart
     fig = px.scatter(
         timeline_df,
-        x="Date",
+        x="Start",
         y="Event",
         color="Type",
-        hover_data=["Event", "Date", "Type"],
+        hover_data=["Event", "Start", "Type"],
         size_max=20,
         height=400
     )
 
     fig.update_layout(
         yaxis=dict(autorange="reversed"),  # So earliest events on top
-        xaxis_title="Date",
+        xaxis_title="Start",
         yaxis_title="Event",
         showlegend=True
     )
