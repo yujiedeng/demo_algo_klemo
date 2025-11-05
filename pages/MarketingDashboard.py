@@ -10,8 +10,8 @@ import os
 from helpers.auth import check_password
 import pytz
 
-# if not check_password():
-#     st.stop()
+if not check_password():
+    st.stop()
 
 df = pd.read_parquet(f"dataMarket/downloads.parquet")
 mtime = os.path.getmtime("dataMarket/downloads.parquet")
