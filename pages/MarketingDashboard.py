@@ -10,8 +10,8 @@ import os
 from helpers.auth import check_password
 import pytz
 
-if not check_password():
-    st.stop()
+# if not check_password():
+#     st.stop()
 
 df = pd.read_parquet(f"dataMarket/downloads.parquet")
 mtime = os.path.getmtime("dataMarket/downloads.parquet")
@@ -71,12 +71,20 @@ fig_daily.add_trace(go.Bar(
     y=df_daily["verified"],
     name="Verified",
     marker_color="#2ecc71",
+    text=df_daily["verified"],  # ⬅️ Valeurs à afficher
+    textposition="inside",       # ⬅️ Position du texte
+    textangle=0,
+    textfont=dict(color="white", size=12),
 ))
 fig_daily.add_trace(go.Bar(
     x=df_daily["date"],
     y=df_daily["not_verified"],
     name="Not Verified",
     marker_color="#e74c3c",
+    text=df_daily["not_verified"],  # ⬅️ Valeurs à afficher
+    textposition="inside",
+    textangle=0,
+    textfont=dict(color="white", size=12),
 ))
 
 # Line: % verified (on secondary y-axis)
@@ -88,7 +96,17 @@ fig_daily.add_trace(go.Scatter(
     marker=dict(size=8, color="#3498db"),
     line=dict(width=2, color="#3498db"),
     yaxis="y2",
-))
+    text=df_daily["verified_pct"],  # ⬅️ Valeurs à afficher
+    textposition="top center",
+    textfont=dict(color="white", size=12),
+)
+)
+
+# fig_daily.update_traces(
+#     textangle=0,               # 👈 keep all labels horizontal
+#     textposition='inside',     # or 'outside' if you want them above bars
+#     textfont=dict(size=11)
+# )
 
 # 3️⃣ Layout & styling
 fig_daily.update_layout(
@@ -104,6 +122,7 @@ fig_daily.update_layout(
     ),
     barmode="stack",
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+    showlegend=True,
     template="plotly_white",
     autosize=True,
     height=None,  # Let Streamlit/Plotly expand naturally
@@ -322,6 +341,9 @@ df_weekly.rename(columns={"total":"inscrits","verified":"mail_verified","step_4_
 df_weekly = df_weekly[["week_start","inscrits","mail_verified","bilan_generated","moyenne_eer_bilan_J","mediane_eer_bilan_J","reco_generated","moyenne_eer_recoG_J","mediane_eer_recoG_J"]]
 st.write('pour Anne')
 st.dataframe(df_weekly)
+
+df_daily_bilan = pd.read_parquet(f"dataMarket/bilan_daily.parquet")
+st.dataframe(df_daily_bilan)
 
 # items = [
 #     {"id": 1, "content": "Marketing: Soirée Lancement", "start": "2025-10-09"},
