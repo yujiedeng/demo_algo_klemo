@@ -495,7 +495,7 @@ def display_strat_output(obj, ssobj, payload_strat, strat_output,debut=0):
                 st.markdown(best_element['attribut']['metrique1']['description'])
             
             with metric_cols[1]:
-                st.markdown(best_element['attribut']['metrique1']['libelle'])
+                st.markdown(best_element['attribut']['metrique2']['libelle'])
                 st.markdown(f"<h2 style='text-align: center;'>{best_element['attribut']['metrique2']['value']} €</h2>", unsafe_allow_html=True)
                 st.markdown(best_element['attribut']['metrique2']['description'])
         
