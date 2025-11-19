@@ -22,8 +22,8 @@ from helpers.auth import check_password
 from helpers import func
 from datetime import datetime
 
-# if not check_password():
-#     st.stop()
+if not check_password():
+    st.stop()
 
 st.title("♟️ Stratégies: Réduire ses impôts - Investir pour obtenir des réductions d'impôts")
 st.write("4 axes pour réduire vos impôts en investissant :")
