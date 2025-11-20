@@ -64,7 +64,7 @@ with st.expander("👤 Information", expanded=True):
         VR = st.number_input("Versement Programmé", min_value=100, step=100)
         
     with col3:
-        horizon = st.number_input("Horizon", min_value=15, step=1)
+        horizon = st.number_input("Horizon", min_value=1, step=1)
     
     # Save modifications
     if st.button("💾 Enregistrer"):
