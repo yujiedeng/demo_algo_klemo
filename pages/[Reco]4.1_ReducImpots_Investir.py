@@ -134,8 +134,7 @@ if st.button("LANCER SIMULATION RECOS KLEMO"):
         "requestKey": st.session_state.json_synth_key,
         "objectif": func.MAPPINGS_OBJECTIF_CHOICES[selected_objectif],
         "sousObjectif": func.MAPPINGS_OBJECTIF_CHOICES[selected_sous_objectif],
-        "paramObjectif": json.loads(paramObj),
-        "investorProfile":{"level":"Balanced","esg":"Neutral"}
+        "paramObjectif": json.loads(paramObj)
     }
 
 # json_proj = json.loads(json_proj)
