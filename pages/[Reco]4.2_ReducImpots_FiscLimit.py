@@ -25,52 +25,52 @@ from datetime import datetime
 if not check_password():
     st.stop()
 
-st.title("♟️ Stratégies: Réduire vos impôts - Investir pour obtenir des réductions d'impôts")
-st.write("4 axes pour réduire vos impôts en investissant :")
-st.write("1/[Dispo] Investir dans un PER avec la défiscalisation des versements")
-st.write("2/[A Venir] Investir en immobilier locatif avec des dispositifs (Denormandie, Censi-Bouvard)")
-st.write("3/[A Venir] Investir dans des SCPI fiscales")
-st.write("4/[GFI,Sofica Dispo] Investir dans des fonds de défiscalisation (FCPI, FIP, Girardin, Sofica, GFI)")
+st.title("♟️ Stratégies: Réduire vos impôts - Limiter la fiscalité sur vos revenus")
+st.write("4 axes pour limiter la fiscalité sur vos revenus :")
+st.write("1/[Dispo NEW] Via un régime fiscal optimisé pour l'imobilier (LMNP, micro vs réel...)")
+st.write("2/[A Venir] Via des dispositifs d'abattement sur les revenus immobiliers (Déficit foncier, LLI, Locavantage)")
+st.write("3/[Dispo]] Via des enveloppes fiscales optimales pour l'épargne LT (PER, PEA, AV)")
+st.write("4/[A Venir] Via des livrets défiscalisés")
 
 
 # --- Step 1: Initialize session_state ---
-if "base_person_4_1" not in st.session_state:
-    st.session_state.base_person_4_1 = func.load_base_info("p4_1")
+if "base_person_4_2" not in st.session_state:
+    st.session_state.base_person_4_2 = func.load_base_info("p4_2")
 
 # --- Step 2: Show editable section ---
 with st.expander("👤 Information", expanded=True):
     col1,col2,col3  = st.columns(3)
 
     with col1:
-        age = st.number_input("Mon Age", min_value=18, max_value=100, value=datetime.today().year - int(st.session_state.base_person_4_1["Client"]["PatClientDetail"][0]["dateNaissance"][:4]))
-        situation = st.selectbox("Ma Situation Personnelle", ["Célibataire", "Union Libre", "Pacsé(e)", "Marié(e)"], index=["Célibataire", "Union Libre", "Pacsé(e)", "Marié(e)"].index(st.session_state.base_person_4_1["Client"]["PatClientDetail"][0]["typeUnion"]))
-        charge = st.number_input("Mes dépenses courantes mensuelles (€)", min_value=0, step=100, value=int(st.session_state.base_person_4_1["Cashflow"]["PatCashflowDetail"][0]["depensesCourantes"]))
+        age = st.number_input("Mon Age", min_value=18, max_value=100, value=datetime.today().year - int(st.session_state.base_person_4_2["Client"]["PatClientDetail"][0]["dateNaissance"][:4]))
+        situation = st.selectbox("Ma Situation Personnelle", ["Célibataire", "Union Libre", "Pacsé(e)", "Marié(e)"], index=["Célibataire", "Union Libre", "Pacsé(e)", "Marié(e)"].index(st.session_state.base_person_4_2["Client"]["PatClientDetail"][0]["typeUnion"]))
+        charge = st.number_input("Mes dépenses courantes mensuelles (€)", min_value=0, step=100, value=int(st.session_state.base_person_4_2["Cashflow"]["PatCashflowDetail"][0]["depensesCourantes"]))
 
     with col2:
-        immo = st.number_input("La Valo de mon RP (€)", min_value=0, step=100, value=int(st.session_state.base_person_4_1["Immo"]["PatImmoDetail"][0]["value"]))
-        salaire = st.number_input("Mon salaire brut annuel (€)", min_value=0, step=1000, value=int(st.session_state.base_person_4_1["Cashflow"]["PatCashflowDetail"][0]["revenusActivite"])) 
-        fin_1 = st.number_input("Mon épargne Livret A (€)", min_value=0, step=1000, value=int(st.session_state.base_person_4_1["Fin"]["PatFinDetail"][0]["value"]))
+        immo = st.number_input("La Valo de mon RP (€)", min_value=0, step=100, value=int(st.session_state.base_person_4_2["Immo"]["PatImmoDetail"][0]["value"]))
+        salaire = st.number_input("Mon salaire brut annuel (€)", min_value=0, step=1000, value=int(st.session_state.base_person_4_2["Cashflow"]["PatCashflowDetail"][0]["revenusActivite"])) 
+        fin_1 = st.number_input("Mon épargne Livret A (€)", min_value=0, step=1000, value=int(st.session_state.base_person_4_2["Fin"]["PatFinDetail"][0]["value"]))
 
     with col3:
-        fin_2 = st.number_input("Mon investissement PEA (€)", min_value=0, step=1000, value=int(st.session_state.base_person_4_1["Fin"]["PatFinDetail"][1]["value"]))
-        fin_3 = st.number_input("Mon investissement AV (€)", min_value=0, step=1000, value=int(st.session_state.base_person_4_1["Fin"]["PatFinDetail"][2]["value"]))
+        fin_2 = st.number_input("Mon investissement PEA (€)", min_value=0, step=1000, value=int(st.session_state.base_person_4_2["Fin"]["PatFinDetail"][1]["value"]))
+        fin_3 = st.number_input("Mon investissement AV (€)", min_value=0, step=1000, value=int(st.session_state.base_person_4_2["Fin"]["PatFinDetail"][2]["value"]))
         
     # Save modifications
     if st.button("💾 Enregistrer"):
-        st.session_state.base_person_4_1["Client"]["PatClientDetail"][0]["dateNaissance"] = f"{datetime.today().year - age}-01-01"
-        st.session_state.base_person_4_1["Client"]["PatClientDetail"][0]["typeUnion"] = situation
-        st.session_state.base_person_4_1["Fin"]["PatFinDetail"][0]["value"] = fin_1
-        st.session_state.base_person_4_1["Fin"]["PatFinDetail"][0]["quotePart"] = fin_1
-        st.session_state.base_person_4_1["Fin"]["PatFinDetail"][1]["value"] = fin_2
-        st.session_state.base_person_4_1["Fin"]["PatFinDetail"][1]["quotePart"] = fin_2
-        st.session_state.base_person_4_1["Fin"]["PatFinDetail"][2]["value"] = fin_3
-        st.session_state.base_person_4_1["Fin"]["PatFinDetail"][2]["quotePart"] = fin_3
-        st.session_state.base_person_4_1["Immo"]["PatImmoDetail"][0]["quotePart"] = immo
-        st.session_state.base_person_4_1["Cashflow"]["PatCashflowDetail"][0]["depensesCourantes"] = charge
-        st.session_state.base_person_4_1["Cashflow"]["PatCashflowDetail"][0]["revenusActivite"] = salaire
+        st.session_state.base_person_4_2["Client"]["PatClientDetail"][0]["dateNaissance"] = f"{datetime.today().year - age}-01-01"
+        st.session_state.base_person_4_2["Client"]["PatClientDetail"][0]["typeUnion"] = situation
+        st.session_state.base_person_4_2["Fin"]["PatFinDetail"][0]["value"] = fin_1
+        st.session_state.base_person_4_2["Fin"]["PatFinDetail"][0]["quotePart"] = fin_1
+        st.session_state.base_person_4_2["Fin"]["PatFinDetail"][1]["value"] = fin_2
+        st.session_state.base_person_4_2["Fin"]["PatFinDetail"][1]["quotePart"] = fin_2
+        st.session_state.base_person_4_2["Fin"]["PatFinDetail"][2]["value"] = fin_3
+        st.session_state.base_person_4_2["Fin"]["PatFinDetail"][2]["quotePart"] = fin_3
+        st.session_state.base_person_4_2["Immo"]["PatImmoDetail"][0]["quotePart"] = immo
+        st.session_state.base_person_4_2["Cashflow"]["PatCashflowDetail"][0]["depensesCourantes"] = charge
+        st.session_state.base_person_4_2["Cashflow"]["PatCashflowDetail"][0]["revenusActivite"] = salaire
         
-        with open("json/p4_1.json", "w", encoding="utf-8") as f:
-            json.dump(st.session_state.base_person_4_1, f, ensure_ascii=False, indent=4)
+        with open("json/p4_2.json", "w", encoding="utf-8") as f:
+            json.dump(st.session_state.base_person_4_2, f, ensure_ascii=False, indent=4)
         st.success(f"✅ Info Enregistrée")
 
 
@@ -79,7 +79,7 @@ with st.expander("🕒 BILAN KLEMO", expanded=True):
 
     if st.button("LANCER LA SIMULATION KLEMO"):
         
-        json_proj, time_elapsed = func.call_api(st.session_state.base_person_4_1,func.FILL_SCORE_URL)
+        json_proj, time_elapsed = func.call_api(st.session_state.base_person_4_2,func.FILL_SCORE_URL)
         st.session_state.json_proj = json_proj["output"]
         
         json_synth, time_elapsed = func.call_api(st.session_state.json_proj,func.PROJ_URL)
@@ -122,7 +122,7 @@ with st.expander("📝 FORMULAIRE OBJECTIF", expanded=True):
             "Choisir un Objectif Détaillé",
             options=func.OBJECTIF_CHOICES[selected_objectif],
             key="sous_objectif_select",
-            index = 0
+            index = 1
         )
     
     paramObj = st.text_area(":black_nib: entrer des paramètres d'objectif (optionnel):",value='{"horizon":10,"debut":"2025-12-31"}', height=200)
