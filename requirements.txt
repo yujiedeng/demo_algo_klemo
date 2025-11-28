@@ -2,7 +2,7 @@ pandas==2.0.3
 numpy==1.24.3
 streamlit==1.28.0
 streamlit-vis-timeline==0.3.0
-plotly==5.17.0
+plotly==5.19.0
 requests==2.32.5
 requests_aws4auth==1.2.0
 scipy==1.13.1

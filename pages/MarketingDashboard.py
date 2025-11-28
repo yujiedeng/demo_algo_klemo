@@ -412,3 +412,83 @@ if not timeline_df.empty:
     st.plotly_chart(fig, use_container_width=True)
 else:
     st.warning("No valid events to display. Make sure all dates are valid.")
+
+
+
+st.subheader(":hook: Target and Recommandation Analysis")
+df = pd.read_parquet(f"dataMarket/recoAnalysis.parquet")
+
+def count_and_pct(df, col):
+    cnt = df.groupby(col).size().reset_index(name="count")
+    cnt["pct"] = cnt["count"] / cnt["count"].sum() * 100
+    return cnt.sort_values("count", ascending=False)
+
+count_obj = count_and_pct(df, "objectif")
+count_ssobj = count_and_pct(df, "sous_objectif")
+count_reco = count_and_pct(df, "RECOMMENDATION_ID")
+
+
+# -----------------------------------
+# 2) Graphiques Plotly
+# -----------------------------------
+
+# --- Bar cat1 ---
+fig1 = px.bar(
+    count_obj,
+    x="objectif",
+    y="count",
+    text= count_obj["pct"].round(1).astype(str) + "%",
+    title="Répartition Objectif (count + %)"
+)
+fig1.update_traces(textposition="outside")
+st.plotly_chart(fig1, use_container_width=True)
+
+# --- Bar cat2 ---
+fig2 = px.bar(
+    count_ssobj,
+    x="sous_objectif",
+    y="count",
+    text= count_ssobj["pct"].round(1).astype(str) + "%",
+    title="Répartition Sous_objectif (count + %)"
+)
+fig2.update_layout(xaxis={'categoryorder':'total descending'})
+fig2.update_traces(textposition="outside")
+st.plotly_chart(fig2, use_container_width=True)
+
+# --- Bar cat3 (top 20 pour lisibilité) ---
+topN = 20
+count_reco_top = count_reco.head(topN)
+
+fig3 = px.bar(
+    count_reco_top,
+    x="RECOMMENDATION_ID",
+    y="count",
+    text= count_reco_top["pct"].round(1).astype(str) + "%",
+    title=f"Répartition RECO (Top {topN})"
+)
+fig3.update_layout(xaxis={'categoryorder':'total descending'})
+fig3.update_traces(textposition="outside")
+st.plotly_chart(fig3, use_container_width=True)
+
+# --- Sunburst hiérarchique (cat1 → cat2 → cat3) ---
+if not isinstance(df, pd.DataFrame):
+    df_pd = df.to_pandas()  # obligatoire pour Plotly
+else:
+    df_pd = df.copy()
+
+# Forcer les colonnes utilisées par sunburst à être des chaînes
+for col in ["objectif", "sous_objectif", "RECOMMENDATION_ID"]:
+    df_pd[col] = df_pd[col].astype(str)
+
+# Supprimer les lignes avec None / NaN (optionnel mais sûr)
+df_pd = df_pd.dropna(subset=["objectif", "sous_objectif", "RECOMMENDATION_ID"])
+
+# Créer le sunburst
+fig4 = px.sunburst(
+    df_pd,
+    path=["objectif", "sous_objectif", "RECOMMENDATION_ID"],
+    title="Vue hiérarchique"
+)
+
+# Affichage Streamlit
+st.plotly_chart(fig4, use_container_width=True)
