@@ -57,7 +57,7 @@ with st.expander("👤 Information", expanded=True):
 
     with col1:
         typeProduit = st.selectbox("Produit", ["KLEMO_PER", "KLEMO_VIE"])
-        riskProfile = st.selectbox("Profil de risque", ["Secure", "Cautious", "Balanced", "Dynamic","Aggresive"])
+        riskProfile = st.selectbox("Profil de risque", ["Secure", "Cautious", "Balanced", "Dynamic","Aggressive"])
     
     with col2:
         VI = st.number_input("Versement Initial", min_value=500, step=100)
