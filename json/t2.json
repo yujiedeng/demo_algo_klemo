@@ -1,0 +1,141 @@
+{
+    "Cashflow": {
+        "DataScore": [],
+        "PatCashflowDetailAdj": [],
+        "PatCashflowDetail": [
+            {
+                "investEntreprise": null,
+                "revenusActiviteExceptionnelEnd": null,
+                "pensionInfoRetraite": null,
+                "pensionInfoRetraiteConjoint": null,
+                "revenusActiviteConjoint": 0,
+                "revenusActiviteExceptionnel": null,
+                "depensesCourantes": 150,
+                "eauElecGazHabitationPrincipale": null,
+                "revenusActiviteExceptionnelStart": null,
+                "id": "01KC0KK1CWN1BJY5T2R7WBSNMH",
+                "pensionAlimentaireEnd": null,
+                "coefBrutNetConjoint": null,
+                "emploiDomicile": null,
+                "loyerHabitationPrincipale": 0,
+                "donsRecurrents": null,
+                "nbPartFiscal": 1,
+                "pensionRetraiteConjoint": 0,
+                "pensionAlimentaireRecue": null,
+                "coefBrutNet": null,
+                "revenusActivite": 6307,
+                "nbPartFiscalSpecial": null,
+                "fraisDependance": null,
+                "pensionRetraite": 0,
+                "pensionAlimentaireVersee": null,
+                "plafondEpargneRetraite": null,
+                "gardeEnfant": null
+            }
+        ]
+    },
+    "Immo": {
+        "PatImmoDetail": [],
+        "HistoInvest": [],
+        "DataScore": [],
+        "PatImmoDetailAdj": [],
+        "HistoValue": [],
+        "DataComment": []
+    },
+    "Enfant": {
+        "DataScore": [],
+        "PatEnfantDetail": [],
+        "PatEnfantDetailAdj": []
+    },
+    "ScoreQuality": {
+        "Cashflow": null,
+        "Immo": null,
+        "Enfant": null,
+        "Total": null,
+        "Fin": null,
+        "Pro": null,
+        "Client": null,
+        "Emprunt": null
+    },
+    "Fin": {
+        "HistoInvest": [],
+        "DataScore": [],
+        "PatFinDetail": [],
+        "PatFinDetailAdj": [],
+        "HistoValue": [],
+        "DataComment": []
+    },
+    "Client": {
+        "PatClientDetailAdj": [],
+        "PatClientDetail": [
+            {
+                "numFiscalFrance": null,
+                "capaciteLegale": "Pleine et entière",
+                "paysResidenceFiscale": "France",
+                "nomNaissance": null,
+                "dateNaissance": "1966-01-01",
+                "deuxiemePrenom": null,
+                "regimeMatrimonial": "non applicable",
+                "nom": null,
+                "usPerson": false,
+                "dateContratMariagePacs": null,
+                "typeUnion": "Célibataire",
+                "lieuNaissance": null,
+                "ageConjoint": null,
+                "numFiscalUS": null,
+                "anneeNaissanceConjoint": null,
+                "tel": null,
+                "id": "01KC0K1B52F3C47XAT6GJ2YVY1",
+                "nbEnfants": 0,
+                "designationConjointPacs": null,
+                "prenom": null,
+                "email": null,
+                "civilite": null,
+                "troisiemePrenom": null,
+                "ppeProche": false,
+                "nationalite": null,
+                "profession": null,
+                "statutPro": "sans profession",
+                "ville": null,
+                "ppe": false,
+                "ppeFonction": null,
+                "codePostalLieuNaissance": null,
+                "statutProConjoint": null,
+                "ppeProcheFonction": null,
+                "paysNaissance": null,
+                "dateDivorceFinPacs": null,
+                "codePostal": null,
+                "regimeSocial": null,
+                "majeurProtege": null,
+                "complementAdresse": null,
+                "adresse": null,
+                "ageRetraite": null
+            }
+        ]
+    },
+    "Pro": {
+        "HistoInvest": [],
+        "DataScore": [],
+        "HistoValue": [],
+        "DataComment": [],
+        "PatProDetail": [],
+        "PatProDetailAdj": []
+    },
+    "ScoreNoQuality": {
+        "Cashflow": null,
+        "Immo": null,
+        "Enfant": null,
+        "Total": null,
+        "Fin": null,
+        "Pro": null,
+        "Client": null,
+        "Emprunt": null
+    },
+    "Emprunt": {
+        "HistoInvest": [],
+        "DataScore": [],
+        "HistoValue": [],
+        "DataComment": [],
+        "PatEmpruntDetail": [],
+        "PatEmpruntDetailAdj": []
+    }
+}
