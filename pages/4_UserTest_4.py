@@ -18,6 +18,7 @@ if "base_t4" not in st.session_state:
 with st.expander("👤 Information", expanded=True):
     st.write("ID User:", st.session_state.base_t4["Client"]["PatClientDetail"][0]["id"])
     st.write("Statut Pro User:", st.session_state.base_t4["Client"]["PatClientDetail"][0]["statutPro"])
+    st.write("Objectif du client est de financer un projet immo sans préciser le montant du projet")
 
     col1,col2,col3  = st.columns(3)
 
