@@ -30,15 +30,12 @@ with st.expander("👤 Information", expanded=True):
         loyer = st.number_input("Mon loyer mensuel (€)", min_value=0, step=100, value=int(st.session_state.base_t5["Cashflow"]["PatCashflowDetail"][0]["loyerHabitationPrincipale"]))
 
     with col3:
-        emp = st.number_input("Mon Emprunt Auto vaut (€)", min_value=0, step=1000, value=int(st.session_state.base_t5["Emprunt"]["PatEmpruntDetail"][0]["montantRestantDu"]))
         salaire = st.number_input("Mon salaire brut annuel (€)", min_value=0, step=1000, value=int(st.session_state.base_t5["Cashflow"]["PatCashflowDetail"][0]["revenusActivite"])) 
     
     # Save modifications
     if st.button("💾 Enregistrer"):
         st.session_state.base_t5["Client"]["PatClientDetail"][0]["dateNaissance"] = f"{datetime.today().year - age}-01-01"
         st.session_state.base_t5["Client"]["PatClientDetail"][0]["typeUnion"] = situation
-        st.session_state.base_t5["Emprunt"]["PatEmpruntDetail"][0]["montantRestantDu"] = emp
-        st.session_state.base_t5["Emprunt"]["PatEmpruntDetail"][0]["quotePart"] = emp
         st.session_state.base_t5["Cashflow"]["PatCashflowDetail"][0]["loyerHabitationPrincipale"] = loyer
         st.session_state.base_t5["Cashflow"]["PatCashflowDetail"][0]["depensesCourantes"] = charge
         st.session_state.base_t5["Cashflow"]["PatCashflowDetail"][0]["revenusActivite"] = salaire
@@ -100,10 +97,11 @@ with st.expander("📝 FORMULAIRE OBJECTIF", expanded=True):
         selected_sous_objectif = st.selectbox(
             "Choisir un Objectif Détaillé",
             options=func.OBJECTIF_CHOICES[selected_objectif],
-            key="sous_objectif_select"
+            key="sous_objectif_select",
+            index=3
         )
     
-    paramObj = st.text_area(":black_nib: entrer des paramètres d'objectif (optionnel):",value='{"debut":"2025-10-31", "montantRegulier":200,"horizon":20}', height=200)
+    paramObj = st.text_area(":black_nib: entrer des paramètres d'objectif (optionnel):",value='{}', height=200)
     
 if st.button("LANCER SIMULATION RECOS KLEMO"):
     # Build the payload
@@ -113,7 +111,7 @@ if st.button("LANCER SIMULATION RECOS KLEMO"):
         "objectif": func.MAPPINGS_OBJECTIF_CHOICES[selected_objectif],
         "sousObjectif": func.MAPPINGS_OBJECTIF_CHOICES[selected_sous_objectif],
         "paramObjectif": json.loads(paramObj),
-        "investorProfile":{"level":"Balanced","esg":"Neutral"}
+        "investorProfile":{"level":"Balanced","esg":"Committed"}
     }
 
 # json_proj = json.loads(json_proj)

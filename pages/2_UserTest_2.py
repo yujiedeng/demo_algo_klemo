@@ -101,7 +101,7 @@ with st.expander("📝 FORMULAIRE OBJECTIF", expanded=True):
             key="sous_objectif_select"
         )
     
-    paramObj = st.text_area(":black_nib: entrer des paramètres d'objectif (optionnel):",value='{"debut":"2025-10-31", "montantRegulier":200,"horizon":20}', height=200)
+    paramObj = st.text_area(":black_nib: entrer des paramètres d'objectif (optionnel):",value='{}', height=200)
     
 if st.button("LANCER SIMULATION RECOS KLEMO"):
     # Build the payload
@@ -111,7 +111,7 @@ if st.button("LANCER SIMULATION RECOS KLEMO"):
         "objectif": func.MAPPINGS_OBJECTIF_CHOICES[selected_objectif],
         "sousObjectif": func.MAPPINGS_OBJECTIF_CHOICES[selected_sous_objectif],
         "paramObjectif": json.loads(paramObj),
-        "investorProfile":{"level":"Balanced","esg":"Neutral"}
+        "investorProfile":{"level":"Cautious","esg":"Neutral"}
     }
 
 # json_proj = json.loads(json_proj)

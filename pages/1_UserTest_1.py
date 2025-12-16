@@ -18,8 +18,7 @@ if "base_t1" not in st.session_state:
 with st.expander("👤 Information", expanded=True):
     st.write("ID User:", st.session_state.base_t1["Client"]["PatClientDetail"][0]["id"])
     st.write("Statut Pro User:", st.session_state.base_t1["Client"]["PatClientDetail"][0]["statutPro"])
-
-    
+    st.write("Objectif du client est de compléter ses revenus - générer des revenus supplémentaire - à partir de 2030 pdt 20 ans")
     col1,col2,col3  = st.columns(3)
 
     with col1:
@@ -93,7 +92,8 @@ with st.expander("📝 FORMULAIRE OBJECTIF", expanded=True):
         selected_objectif = st.selectbox(
             "Choisir un Objectif",
             options=list(func.OBJECTIF_CHOICES.keys()),
-            key="objectif_select"
+            key="objectif_select",
+            index = 2
         )
     
     with col2:
@@ -104,7 +104,7 @@ with st.expander("📝 FORMULAIRE OBJECTIF", expanded=True):
             key="sous_objectif_select"
         )
     
-    paramObj = st.text_area(":black_nib: entrer des paramètres d'objectif (optionnel):",value='{"debut":"2025-10-31", "montantRegulier":200,"horizon":20}', height=200)
+    paramObj = st.text_area(":black_nib: entrer des paramètres d'objectif (optionnel):",value='{"debut":"2030-12-10", "horizon":20}', height=200)
     
 if st.button("LANCER SIMULATION RECOS KLEMO"):
     # Build the payload
@@ -114,7 +114,7 @@ if st.button("LANCER SIMULATION RECOS KLEMO"):
         "objectif": func.MAPPINGS_OBJECTIF_CHOICES[selected_objectif],
         "sousObjectif": func.MAPPINGS_OBJECTIF_CHOICES[selected_sous_objectif],
         "paramObjectif": json.loads(paramObj),
-        "investorProfile":{"level":"Balanced","esg":"Neutral"}
+        "investorProfile":{"level":"Dynamic","esg":"Neutral"}
     }
 
 # json_proj = json.loads(json_proj)

@@ -92,7 +92,8 @@ with st.expander("📝 FORMULAIRE OBJECTIF", expanded=True):
         selected_objectif = st.selectbox(
             "Choisir un Objectif",
             options=list(func.OBJECTIF_CHOICES.keys()),
-            key="objectif_select"
+            key="objectif_select",
+            index = 1
         )
     
     with col2:
@@ -100,10 +101,11 @@ with st.expander("📝 FORMULAIRE OBJECTIF", expanded=True):
         selected_sous_objectif = st.selectbox(
             "Choisir un Objectif Détaillé",
             options=func.OBJECTIF_CHOICES[selected_objectif],
-            key="sous_objectif_select"
+            key="sous_objectif_select",
+            index =1
         )
     
-    paramObj = st.text_area(":black_nib: entrer des paramètres d'objectif (optionnel):",value='{"debut":"2025-10-31", "montantRegulier":200,"horizon":20}', height=200)
+    paramObj = st.text_area(":black_nib: entrer des paramètres d'objectif (optionnel):",value='{}', height=200)
     
 if st.button("LANCER SIMULATION RECOS KLEMO"):
     # Build the payload

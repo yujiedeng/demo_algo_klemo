@@ -257,10 +257,10 @@ def display_bilan_synth(json_synth):
         st.plotly_chart(fig, use_container_width=True)
 
         st.write("Aperçu de la synthèse des biens actifs et passifs")
-        st.dataframe(df_assetSynth[["dates","FinPct5","FinPct50","FinPct95","ImmoPct5","ImmoPct50","ImmoPct95","ScpiPct5","ScpiPct50","ScpiPct95","EmpruntPct5","EmpruntPct50","EmpruntPct95","ProPct5","ProPct50","ProPct95", "TresoPct5","TresoPct50","TresoPct95","TotalPct5","TotalPct50","TotalPct95"]].head(11))
+        st.dataframe(df_assetSynth[["dates","FinPct5","FinPct50","FinPct95","ImmoPct5","ImmoPct50","ImmoPct95","ScpiPct5","ScpiPct50","ScpiPct95","EmpruntPct5","EmpruntPct50","EmpruntPct95","ProPct5","ProPct50","ProPct95", "TresoPct5","TresoPct50","TresoPct95","TotalPct5","TotalPct50","TotalPct95"]])
 
         st.write("Aperçu de la synthèse du cashflow")
-        st.dataframe(pd.DataFrame(json_synth["output"]["cashflowSynth"])[["dates","RevenusActivite","RetraiteRentePension","RetraitDivActifFinancier",	"RevenusImmobilier",	"DepensesCourantes",	"Emprunt", "RevenusScpiNet","RevenusProNet","ImpotsBareme","ImpotsAutres"	]].head(11))
+        st.dataframe(pd.DataFrame(json_synth["output"]["cashflowSynth"])[["dates","RevenusActivite","RetraiteRentePension","RetraitDivActifFinancier",	"RevenusImmobilier",	"DepensesCourantes",	"Emprunt", "RevenusScpiNet","RevenusProNet","ImpotsBareme","ImpotsAutres"	]])
 
 
     elif st.session_state.current_graph == 2:
