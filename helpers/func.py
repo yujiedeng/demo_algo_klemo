@@ -396,7 +396,6 @@ def display_bilan_synth(json_synth):
             unsafe_allow_html=True)
 
 
-
         st.subheader("Evolution de vos impôts: ")
         df_impot = pd.DataFrame(json_synth["output"]["cashflowSynth"])[["dates","ImpotsBareme","ImpotsInvest","ImpotsAutres"]]
         df_impot[df_impot.select_dtypes(include='number').columns] *= -1
