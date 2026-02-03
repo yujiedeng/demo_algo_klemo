@@ -345,6 +345,10 @@ st.dataframe(df_weekly)
 df_daily_bilan = pd.read_parquet(f"dataMarket/bilan_daily.parquet")
 st.dataframe(df_daily_bilan)
 
+df_sous = pd.read_parquet("dataMarket/subscribe.parquet")
+st.dataframe(df_sous)
+
+
 # items = [
 #     {"id": 1, "content": "Marketing: Soirée Lancement", "start": "2025-10-09"},
 #     {"id": 2, "content": "Dev: Fix FireBase Mail à Vérifier", "start": "2025-03-15"},
