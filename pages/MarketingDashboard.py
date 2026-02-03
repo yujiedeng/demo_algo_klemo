@@ -156,7 +156,7 @@ st.subheader("📬 Partie II: Focus Analyse Conversion")
 st.subheader("⏳️ Analyse Funnel: toute période confondue")
 
 df_ana = pd.read_parquet(f"dataMarket/analysis.parquet")
-stages = ['Total Inscrits', 'Verified Email', 'Started Chat', 'Ended Chat','Bilan Generated', 'Answered Target Qst', 'Answered Knowledge Qst', 'Answered Risk Qst', 'Answered ESG Qst', 'Begin Mission Letter', 'Signed Mission Letter ', 'Generated Recommendations', 'KYC Approved', 'Consulted Recommendations']
+stages = ['Total Inscrits', 'Verified Email', 'Started Chat', 'Ended Chat','Bilan Generated', 'Answered Target Qst', 'Answered Knowledge Qst', 'Answered Risk Qst', 'Answered ESG Qst', 'Begin Mission Letter', 'Signed Mission Letter ', 'Generated Recommendations', 'KYC Approved', 'Consulted Recommendations','Subscribe AV PER Klemo']
 counts = [
     len(df_ana), 
     df_ana['step_1_mail_verified'].sum(),  
@@ -171,7 +171,8 @@ counts = [
     df_ana['step92_status_sign_signed'].sum(),
     df_ana['step_10_generated_reco'].sum(),
     df_ana['step_11_kyc'].sum(),
-    df_ana['step_12_reco_consulted'].sum()
+    df_ana['step_12_reco_consulted'].sum(),
+    df_ana['step_13_subscribe_klmAVPER'].sum(),
 ]
 
 # Calculate losses (absolute and percentage drop from previous step)
@@ -230,7 +231,8 @@ cohort_stats = df_ana.groupby('cohort').agg({
     'step92_status_sign_signed':'sum',
     'step_10_generated_reco': 'sum',
     'step_11_kyc': 'sum',
-    'step_12_reco_consulted': 'sum'
+    'step_12_reco_consulted': 'sum',
+    'step_13_subscribe_klmAVPER':'sum',
 }).reset_index()
 
 # Add total cohort size
@@ -250,12 +252,12 @@ cohort_stats['%SignLettreMission'] = (cohort_stats['step92_status_sign_signed'] 
 cohort_stats['%RecoGenere'] = (cohort_stats['step_10_generated_reco'] / cohort_stats['total'] * 100).round(1)
 cohort_stats['%KYC'] = (cohort_stats['step_11_kyc'] / cohort_stats['total'] * 100).round(1)
 cohort_stats['%RecoConsulte'] = (cohort_stats['step_12_reco_consulted'] / cohort_stats['total'] * 100).round(1)
-
+cohort_stats['%SubscribeKlemoViePER'] = (cohort_stats['step_13_subscribe_klmAVPER'] / cohort_stats['total'] * 100).round(1)
 # Prepare data for line plot: melt to long format
-steps = ['Total', 'Verified Email', 'Started Chat', 'Ended Chat', 'Bilan Generated', 'Answered Target Qst', 'Answered Knowledge Qst', 'Answered Risk Qst', 'Answered ESG Qst', 'Begin Letter Mission','Signed Mission Letter', 'Generated Recommendations', 'KYC Approved', 'Consulted Recommendations']
+steps = ['Total', 'Verified Email', 'Started Chat', 'Ended Chat', 'Bilan Generated', 'Answered Target Qst', 'Answered Knowledge Qst', 'Answered Risk Qst', 'Answered ESG Qst', 'Begin Letter Mission','Signed Mission Letter', 'Generated Recommendations', 'KYC Approved', 'Consulted Recommendations','Subscribe AV PER Klemo']
 melted = cohort_stats.melt(
     id_vars=['cohort'],
-    value_vars=['total', '%MailVerifie', '%DebutChat', '%FinChat','%Bilan','%QstObjectif','%QstFinance','%QstRisque','%QstESG','%StartedLettreMission','%SignLettreMission','%RecoGenere','%KYC','%RecoConsulte'],
+    value_vars=['total', '%MailVerifie', '%DebutChat', '%FinChat','%Bilan','%QstObjectif','%QstFinance','%QstRisque','%QstESG','%StartedLettreMission','%SignLettreMission','%RecoGenere','%KYC','%RecoConsulte','%SubscribeKlemoViePER'],
     var_name='step_raw',
     value_name='value'
 )
@@ -275,7 +277,8 @@ step_mapping = {
     '%SignLettreMission': 'Signed Letter of Mission',
     '%RecoGenere': 'Generated Recommendations',
     '%KYC': 'KYC Approved',
-    '%RecoConsulte': 'Consulted Recommendations'
+    '%RecoConsulte': 'Consulted Recommendations',
+    '%SubscribeKlemoViePER':'Subscribe AV PER Klemo'
 
 }
 melted['step'] = melted['step_raw'].map(step_mapping)
@@ -345,9 +348,9 @@ st.dataframe(df_weekly)
 df_daily_bilan = pd.read_parquet(f"dataMarket/bilan_daily.parquet")
 st.dataframe(df_daily_bilan)
 
+st.subheader("🧑‍🧑‍🧒 Table de Souscription en cours")
 st.write('Souscription en cours')
-st.write('partner_stat==CONFIRMATION: client a signé le contrat')
-st.write('partner_stat==IN EFFECT: validation contrat par Garance')
+st.write('partner_stat=CONFIRMATION: client a signé le contrat; =IN EFFECT: validation contrat par Garance')
 df_sous = pd.read_parquet("dataMarket/subscribe.parquet")
 st.dataframe(df_sous)
 
