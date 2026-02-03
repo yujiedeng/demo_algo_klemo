@@ -345,6 +345,9 @@ st.dataframe(df_weekly)
 df_daily_bilan = pd.read_parquet(f"dataMarket/bilan_daily.parquet")
 st.dataframe(df_daily_bilan)
 
+st.write('Souscription en cours')
+st.write('partner_stat==CONFIRMATION: client a signé le contrat')
+st.write('partner_stat==IN EFFECT: validation contrat par Garance')
 df_sous = pd.read_parquet("dataMarket/subscribe.parquet")
 st.dataframe(df_sous)
 
