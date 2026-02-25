@@ -350,7 +350,7 @@ st.dataframe(df_daily_bilan)
 
 st.subheader("🧑‍🧑‍🧒 Table de Souscription en cours")
 st.write('Souscription en cours')
-st.write('partner_stat=CONFIRMATION: client a signé le contrat; =IN EFFECT: validation contrat par Garance')
+st.write('partner_stat=CONFIRMATION: client a signé le contrat; =EN VIGUEUR: validation contrat par Garance')
 df_sous = pd.read_parquet("dataMarket/subscribe.parquet")
 st.dataframe(df_sous)
 
