@@ -376,6 +376,11 @@ items = [
     {"id": 6, "content": "💌 Newsletter II Voxe", "start": "2025-10-29T06:00:00", "group": "6"},
 
     {"id": 7, "content": "🛠️ Simplify Onboarding Page", "start": "2025-11-28T017:00:00", "group": "7"},
+
+    {"id": 8, "content": "🛠️ Souscription Klemo Vie & PER LIVE", "start": "2026-02-02T015:00:00", "group": "8"},
+
+    {"id": 9, "content": "🛠️ Optim Parcours: KYC => Fin de souscription", "start": "2026-03-11T08:30:00", "group": "9"},
+
 ]
 
 
@@ -388,7 +393,9 @@ if "events" not in st.session_state:
         {"Start": items[3]["start"], "Event": items[3]["content"], "Type": "Marketing"},
         {"Start": items[4]["start"], "End": items[4]["end"], "Event": items[4]["content"], "Type": "Dev"},
         {"Start": items[5]["start"], "Event": items[5]["content"], "Type": "Marketing"},
-        {"Start": items[6]["start"], "Event": items[6]["content"], "Type": "Dev"}
+        {"Start": items[6]["start"], "Event": items[6]["content"], "Type": "Dev"},
+        {"Start": items[7]["start"], "Event": items[7]["content"], "Type": "Dev"},
+        {"Start": items[8]["start"], "Event": items[8]["content"], "Type": "Dev"},
     ])
 
 # Editable table
