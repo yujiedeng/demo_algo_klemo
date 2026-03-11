@@ -375,9 +375,9 @@ items = [
 
     {"id": 6, "content": "💌 Newsletter II Voxe", "start": "2025-10-29T06:00:00", "group": "6"},
 
-    {"id": 7, "content": "🛠️ Simplify Onboarding Page", "start": "2025-11-28T017:00:00", "group": "7"},
+    {"id": 7, "content": "🛠️ Simplify Onboarding Page", "start": "2025-11-28T17:00:00", "group": "7"},
 
-    {"id": 8, "content": "🛠️ Souscription Klemo Vie & PER LIVE", "start": "2026-02-02T015:00:00", "group": "8"},
+    {"id": 8, "content": "🛠️ Souscription Klemo Vie & PER LIVE", "start": "2026-02-02T15:00:00", "group": "8"},
 
     {"id": 9, "content": "🛠️ Optim Parcours: KYC => Fin de souscription", "start": "2026-03-11T08:30:00", "group": "9"},
 
