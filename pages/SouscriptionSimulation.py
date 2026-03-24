@@ -92,7 +92,7 @@ with st.expander("🕹 SIMULATION SOUSCRIPTION", expanded=True):
 
         st.subheader(f"Evolution de votre actif sur {horizon} ans: ")
 
-        df_evol = pd.DataFrame(st.session_state.json_out_sous["evolution"]).head(horizon)
+        df_evol = pd.DataFrame(st.session_state.json_out_sous["evolution"])#.head(horizon)
         # st.write(df_evol)
         df_evol_graphe = df_evol.copy().rename(
             columns={
