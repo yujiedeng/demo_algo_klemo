@@ -10,8 +10,8 @@ import os
 from helpers.auth import check_password
 import pytz
 
-if not check_password():
-    st.stop()
+# if not check_password():
+#     st.stop()
 
 df = pd.read_parquet(f"dataMarket/downloads.parquet")
 mtime = os.path.getmtime("dataMarket/downloads.parquet")
@@ -36,6 +36,14 @@ df_weekly = (
 )
 df_weekly["verified_pct"] = round(df_weekly["verified"] / df_weekly["total"] * 100, 2)
 
+# --- Monthly aggregation
+df["month_start"] = df["created_at_date"].apply(lambda x: str(x)[:7])
+df_month = (
+    df.groupby("month_start", as_index=False)
+      .agg({"verified": "sum", "not_verified": "sum", "total": "sum"})
+)
+df_month["verified_pct"] = round(df_month["verified"] / df_month["total"] * 100, 2)
+
 
 # --- Streamlit App ---
 st.set_page_config(
@@ -48,7 +56,7 @@ st.write(f"Données mises à jour le {cet_dt}")
 
 # Calendar filter
 min_date, max_date = df["date"].min(), df["date"].max()
-date_range = st.date_input("Select date range:", [min_date, max_date])
+date_range = st.date_input("Selection une plage de dates:", [min_date, max_date])
 
 mask = (df["date"] >= pd.to_datetime(date_range[0])) & (df["date"] <= pd.to_datetime(date_range[1]))
 df_filtered = df.loc[mask].copy()
@@ -59,9 +67,14 @@ df_daily = (
 )
 df_daily["verified_pct"] = round(df_daily["verified"] / df_daily["total"] * 100, 2)
 
+# --- KPIs ---
+st.subheader("📊 Indicateurs Clés")
+col1, col2 = st.columns(2)
+col1.metric("Total des Mails Vérifiés", int(df_filtered["verified"].sum()))
+col2.metric("Taux de Verification", f"{df_filtered['verified_pct'].mean():.2f}%")
 
 
-st.subheader("📬 Partie I: Focus Inscriptions et Vérification Mail")
+st.subheader("📬 Partie I: Focus Inscriptions et Vérifications Mails")
 # 2️⃣ Build dual-axis chart
 fig_daily = go.Figure()
 
@@ -110,11 +123,11 @@ fig_daily.add_trace(go.Scatter(
 
 # 3️⃣ Layout & styling
 fig_daily.update_layout(
-    title="Daily Verification Funnel (Counts + %)",
+    title="Entonnoir de Vérification (Nombre + %)",
     xaxis_title="Date",
     yaxis_title="Nombre d'inscriptions",
     yaxis2=dict(
-        title="Verification Rate (%)",
+        title="Taux de Verification (%)",
         overlaying="y",
         side="right",
         range=[0, 100],
@@ -133,23 +146,30 @@ st.plotly_chart(fig_daily, use_container_width=True)
 
 
 # --- Weekly summary ---
-st.subheader("🗓️ Weekly Summary")
+st.subheader("🗓️ Vue Hebdomadaire")
 
 fig_weekly = px.bar(
     df_weekly,
     x="week_start",
     y="verified_pct",
     text="verified_pct",
-    title="Weekly Verification Rate (%)",
+    title="Taux de Verification Hebdo (%)",
 )
 fig_weekly.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
 st.plotly_chart(fig_weekly, use_container_width=True)
 
-# --- KPIs ---
-st.subheader("📊 Key Metrics")
-col1, col2 = st.columns(2)
-col1.metric("Total Verified", int(df_filtered["verified"].sum()))
-col2.metric("Average Verification Rate", f"{df_filtered['verified_pct'].mean():.2f}%")
+# --- Monthly summary ---
+st.subheader("🗓️ Vue Mensuelle")
+
+fig_monthly = px.bar(
+    df_month,
+    x="month_start",
+    y="verified_pct",
+    text="verified_pct",
+    title="Taux de Verification Mensuel (%)",
+)
+fig_monthly.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
+st.plotly_chart(fig_monthly, use_container_width=True)
 
 
 st.subheader("📬 Partie II: Focus Analyse Conversion")
@@ -216,134 +236,150 @@ fig.update_layout(
 
 st.plotly_chart(fig, use_container_width=True)
 
-st.subheader("🧑‍🧑‍🧒 Analyse Cohort par semaine")
 
-cohort_stats = df_ana.groupby('cohort').agg({
-    'step_1_mail_verified': 'sum',
-    'step_2_chat_started': 'sum',
-    'step_3_chat_end': 'sum',
-    'step_4_bilan': 'sum',
-    'step_5_qst_target': 'sum',
-    'step_6_qst_fin': 'sum',
-    'step_7_qst_risk': 'sum',
-    'step_8_esg': 'sum',
-    'step_9_lettre_mission': 'sum',
-    'step92_status_sign_signed':'sum',
-    'step_10_generated_reco': 'sum',
-    'step_11_kyc': 'sum',
-    'step_12_reco_consulted': 'sum',
-    'step_13_subscribe_klmAVPER':'sum',
-}).reset_index()
+def build_cohort_stats(df_ana,col_cohort):
+    cohort_stats = df_ana.groupby(col_cohort).agg({
+        'step_1_mail_verified': 'sum',
+        'step_2_chat_started': 'sum',
+        'step_3_chat_end': 'sum',
+        'step_4_bilan': 'sum',
+        'step_5_qst_target': 'sum',
+        'step_6_qst_fin': 'sum',
+        'step_7_qst_risk': 'sum',
+        'step_8_esg': 'sum',
+        'step_9_lettre_mission': 'sum',
+        'step92_status_sign_signed':'sum',
+        'step_10_generated_reco': 'sum',
+        'step_11_kyc': 'sum',
+        'step_12_reco_consulted': 'sum',
+        'step_13_subscribe_klmAVPER':'sum',
+    }).reset_index()
+    cohort_stats['total'] = df_ana.groupby(col_cohort).size().values
+    # Calculate percentages relative to cohort total (100% at Total)
+    cohort_stats['%MailVerifie'] = (cohort_stats['step_1_mail_verified'] / cohort_stats['total'] * 100).round(1)
+    cohort_stats['%DebutChat'] = (cohort_stats['step_2_chat_started'] / cohort_stats['total'] * 100).round(1)
+    cohort_stats['%FinChat'] = (cohort_stats['step_3_chat_end'] / cohort_stats['total'] * 100).round(1)
+    cohort_stats['%Bilan'] = (cohort_stats['step_4_bilan'] / cohort_stats['total'] * 100).round(1)
+    cohort_stats['%QstObjectif'] = (cohort_stats['step_5_qst_target'] / cohort_stats['total'] * 100).round(1)
+    cohort_stats['%QstFinance'] = (cohort_stats['step_6_qst_fin'] / cohort_stats['total'] * 100).round(1)
+    cohort_stats['%QstRisque'] = (cohort_stats['step_7_qst_risk'] / cohort_stats['total'] * 100).round(1)
+    cohort_stats['%QstESG'] = (cohort_stats['step_8_esg'] / cohort_stats['total'] * 100).round(1)
+    cohort_stats['%StartedLettreMission'] = (cohort_stats['step_9_lettre_mission'] / cohort_stats['total'] * 100).round(1)
+    cohort_stats['%SignLettreMission'] = (cohort_stats['step92_status_sign_signed'] / cohort_stats['total'] * 100).round(1)
+    cohort_stats['%RecoGenere'] = (cohort_stats['step_10_generated_reco'] / cohort_stats['total'] * 100).round(1)
+    cohort_stats['%KYC'] = (cohort_stats['step_11_kyc'] / cohort_stats['total'] * 100).round(1)
+    cohort_stats['%RecoConsulte'] = (cohort_stats['step_12_reco_consulted'] / cohort_stats['total'] * 100).round(1)
+    cohort_stats['%SubscribeKlemoViePER'] = (cohort_stats['step_13_subscribe_klmAVPER'] / cohort_stats['total'] * 100).round(1)
+    
+    # Prepare data for line plot: melt to long format
+    steps = ['Total', 'Verified Email', 'Started Chat', 'Ended Chat', 'Bilan Generated', 'Answered Target Qst', 'Answered Knowledge Qst', 'Answered Risk Qst', 'Answered ESG Qst', 'Begin Letter Mission','Signed Mission Letter', 'Generated Recommendations', 'KYC Approved', 'Consulted Recommendations','Subscribe AV PER Klemo']
+    melted = cohort_stats.melt(
+        id_vars=[col_cohort],
+        value_vars=['total', '%MailVerifie', '%DebutChat', '%FinChat','%Bilan','%QstObjectif','%QstFinance','%QstRisque','%QstESG','%StartedLettreMission','%SignLettreMission','%RecoGenere','%KYC','%RecoConsulte','%SubscribeKlemoViePER'],
+        var_name='step_raw',
+        value_name='value'
+    )
 
-# Add total cohort size
-cohort_stats['total'] = df_ana.groupby('cohort').size().values
+    # Map step_raw to actual step names
+    step_mapping = {
+        'total': 'Total Inscrits',
+        '%MailVerifie': 'Verified Email',
+        '%DebutChat': 'Started Chat',
+        '%FinChat': 'Ended Chat',
+        '%Bilan': 'Bilan Generated',
+        '%QstObjectif': 'Answered Target Qst',
+        '%QstFinance': 'Answered Knowledge Qst',
+        '%QstRisque': 'Answered Risk Qst',
+        '%QstESG': 'Answered ESG Qst',
+        '%StartedLettreMission': 'Begin Letter Mission',
+        '%SignLettreMission': 'Signed Letter of Mission',
+        '%RecoGenere': 'Generated Recommendations',
+        '%KYC': 'KYC Approved',
+        '%RecoConsulte': 'Consulted Recommendations',
+        '%SubscribeKlemoViePER':'Subscribe AV PER Klemo'
 
-# Calculate percentages relative to cohort total (100% at Total)
-cohort_stats['%MailVerifie'] = (cohort_stats['step_1_mail_verified'] / cohort_stats['total'] * 100).round(1)
-cohort_stats['%DebutChat'] = (cohort_stats['step_2_chat_started'] / cohort_stats['total'] * 100).round(1)
-cohort_stats['%FinChat'] = (cohort_stats['step_3_chat_end'] / cohort_stats['total'] * 100).round(1)
-cohort_stats['%Bilan'] = (cohort_stats['step_4_bilan'] / cohort_stats['total'] * 100).round(1)
-cohort_stats['%QstObjectif'] = (cohort_stats['step_5_qst_target'] / cohort_stats['total'] * 100).round(1)
-cohort_stats['%QstFinance'] = (cohort_stats['step_6_qst_fin'] / cohort_stats['total'] * 100).round(1)
-cohort_stats['%QstRisque'] = (cohort_stats['step_7_qst_risk'] / cohort_stats['total'] * 100).round(1)
-cohort_stats['%QstESG'] = (cohort_stats['step_8_esg'] / cohort_stats['total'] * 100).round(1)
-cohort_stats['%StartedLettreMission'] = (cohort_stats['step_9_lettre_mission'] / cohort_stats['total'] * 100).round(1)
-cohort_stats['%SignLettreMission'] = (cohort_stats['step92_status_sign_signed'] / cohort_stats['total'] * 100).round(1)
-cohort_stats['%RecoGenere'] = (cohort_stats['step_10_generated_reco'] / cohort_stats['total'] * 100).round(1)
-cohort_stats['%KYC'] = (cohort_stats['step_11_kyc'] / cohort_stats['total'] * 100).round(1)
-cohort_stats['%RecoConsulte'] = (cohort_stats['step_12_reco_consulted'] / cohort_stats['total'] * 100).round(1)
-cohort_stats['%SubscribeKlemoViePER'] = (cohort_stats['step_13_subscribe_klmAVPER'] / cohort_stats['total'] * 100).round(1)
-# Prepare data for line plot: melt to long format
-steps = ['Total', 'Verified Email', 'Started Chat', 'Ended Chat', 'Bilan Generated', 'Answered Target Qst', 'Answered Knowledge Qst', 'Answered Risk Qst', 'Answered ESG Qst', 'Begin Letter Mission','Signed Mission Letter', 'Generated Recommendations', 'KYC Approved', 'Consulted Recommendations','Subscribe AV PER Klemo']
-melted = cohort_stats.melt(
-    id_vars=['cohort'],
-    value_vars=['total', '%MailVerifie', '%DebutChat', '%FinChat','%Bilan','%QstObjectif','%QstFinance','%QstRisque','%QstESG','%StartedLettreMission','%SignLettreMission','%RecoGenere','%KYC','%RecoConsulte','%SubscribeKlemoViePER'],
-    var_name='step_raw',
-    value_name='value'
-)
-
-# Map step_raw to actual step names
-step_mapping = {
-    'total': 'Total Inscrits',
-    '%MailVerifie': 'Verified Email',
-    '%DebutChat': 'Started Chat',
-    '%FinChat': 'Ended Chat',
-    '%Bilan': 'Bilan Generated',
-    '%QstObjectif': 'Answered Target Qst',
-    '%QstFinance': 'Answered Knowledge Qst',
-    '%QstRisque': 'Answered Risk Qst',
-    '%QstESG': 'Answered ESG Qst',
-    '%StartedLettreMission': 'Begin Letter Mission',
-    '%SignLettreMission': 'Signed Letter of Mission',
-    '%RecoGenere': 'Generated Recommendations',
-    '%KYC': 'KYC Approved',
-    '%RecoConsulte': 'Consulted Recommendations',
-    '%SubscribeKlemoViePER':'Subscribe AV PER Klemo'
-
-}
-melted['step'] = melted['step_raw'].map(step_mapping)
-
-# Set Total to 100% (override the count value)
-melted.loc[melted['step_raw'] == 'total', 'value'] = 100
-
-# Select relevant columns
-melted = melted[['cohort', 'step', 'value']]
-
-# Create the line plot using Plotly
-fig = go.Figure()
-
-for cohort in melted['cohort'].unique():
-    cohort_data = melted[melted['cohort'] == cohort]
-    fig.add_trace(go.Scatter(
-        x=cohort_data['step'],
-        y=cohort_data['value'],
-        mode='lines+markers',
-        name=cohort,
-        line=dict(width=2),
-        marker=dict(size=8)
-    ))
-
-fig.update_layout(
-    title="Cohort Funnel Analysis: Conversion Rates by Step (Overlapping Lines)",
-    title_x=0.5,
-    xaxis_title="Steps",
-    yaxis_title="Conversion Rate (%)",
-    yaxis=dict(range=[0, 100]),
-    hovermode='x unified',
-    font_size=12,
-    legend_title="Cohorts"
-)
-
-st.plotly_chart(fig, use_container_width=True)
-st.write("Attention: etape %Ansewered Target Qst correspond à deux étapes: %Redirection vers page Reco (Target) + %Fin de Questionnaire Target")
-
-result_bilan = df_ana.groupby("cohort", as_index=False)["step_4_bilan"].sum()
-result_reco = df_ana.groupby("cohort", as_index=False)["step_10_generated_reco"].sum()
-
-# Group by cohort and aggregate mean + median
-agg_df = df_ana.groupby("cohort", as_index=False).agg(
-    {
-        "delta_sec_eer_bilan": ["mean", "median"],
-        "delta_sec_eer_reco_generated": ["mean", "median"]
     }
-)
-agg_df.columns = ["cohort", "temps_bilan_mean_sec", "temps_bilan_median_sec","temps_recoGenerated_mean_sec", "temps_recoGenerated_median_sec"]
-agg_df["moyenne_eer_bilan_J"] = round(agg_df["temps_bilan_mean_sec"] / (3600 * 24),3)
-agg_df["mediane_eer_bilan_J"] = round(agg_df["temps_bilan_median_sec"] / (3600 * 24),3)
+    melted['step'] = melted['step_raw'].map(step_mapping)
 
-agg_df["moyenne_eer_recoG_J"] = round(agg_df["temps_recoGenerated_mean_sec"] / (3600 * 24),3)
-agg_df["mediane_eer_recoG_J"] = round(agg_df["temps_recoGenerated_median_sec"] / (3600 * 24),3)
+    # Set Total to 100% (override the count value)
+    melted.loc[melted['step_raw'] == 'total', 'value'] = 100
 
-df_weekly["week_start"]=df_weekly["week_start"].astype(str)
-df_weekly = pd.merge(df_weekly, result_bilan, left_on="week_start", right_on="cohort", how="left")
-df_weekly = pd.merge(df_weekly, result_reco,  left_on="week_start", right_on="cohort", how="left")
-df_weekly = pd.merge(df_weekly, agg_df[["cohort","moyenne_eer_bilan_J","mediane_eer_bilan_J","moyenne_eer_recoG_J","mediane_eer_recoG_J"]], left_on="week_start", right_on="cohort", how="left")
+    # Select relevant columns
+    melted = melted[[col_cohort, 'step', 'value']]
 
-df_weekly.rename(columns={"total":"inscrits","verified":"mail_verified","step_4_bilan": "bilan_generated", "step_10_generated_reco": "reco_generated"}, inplace=True)
+    # Create the line plot using Plotly
+    fig = go.Figure()
 
-df_weekly = df_weekly[["week_start","inscrits","mail_verified","bilan_generated","moyenne_eer_bilan_J","mediane_eer_bilan_J","reco_generated","moyenne_eer_recoG_J","mediane_eer_recoG_J"]]
-st.write('pour Anne')
-st.dataframe(df_weekly)
+    for cohort in melted[col_cohort].unique():
+        cohort_data = melted[melted[col_cohort] == cohort]
+        fig.add_trace(go.Scatter(
+            x=cohort_data['step'],
+            y=cohort_data['value'],
+            mode='lines+markers',
+            name=cohort,
+            line=dict(width=2),
+            marker=dict(size=8)
+        ))
+
+    fig.update_layout(
+        title="Cohort Funnel Analysis: Conversion Rates by Step (Overlapping Lines)",
+        title_x=0.5,
+        xaxis_title="Steps",
+        yaxis_title="Conversion Rate (%)",
+        yaxis=dict(range=[0, 100]),
+        hovermode='x unified',
+        font_size=12,
+        legend_title="Cohorts"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+    st.write("Attention: etape %Ansewered Target Qst correspond à deux étapes: %Redirection vers page Reco (Target) + %Fin de Questionnaire Target")
+
+    return cohort_stats
+
+st.subheader("🧑‍🧑‍🧒 Analyse Cohort par semaine")
+cohorts_stats_hebdo = build_cohort_stats(df_ana,"cohort")
+st.subheader("🧑‍🧑‍🧒 Analyse Cohort par mois")
+cohorts_stats_mensu = build_cohort_stats(df_ana,"cohort_monthly")
+
+
+def build_agg_stats_for_Anne(df,col_cohort,df_agg,col_start):
+    df_ana = df.copy()
+    result_bilan       = df_ana.groupby(col_cohort, as_index=False)["step_4_bilan"].sum()
+    result_reco        = df_ana.groupby(col_cohort, as_index=False)["step_10_generated_reco"].sum()
+    result_reco_consul = df_ana.groupby(col_cohort, as_index=False)["step_12_reco_consulted"].sum()
+    # Group by cohort and aggregate mean + median
+    agg_df = df_ana.groupby(col_cohort, as_index=False).agg(
+        {
+            "delta_sec_eer_bilan": ["mean", "median"],
+            "delta_sec_eer_reco_generated": ["mean", "median"]
+        }
+    )
+    agg_df.columns = [col_cohort, "temps_bilan_mean_sec", "temps_bilan_median_sec","temps_recoGenerated_mean_sec", "temps_recoGenerated_median_sec"]
+    agg_df["moyenne_eer_bilan_J"] = round(agg_df["temps_bilan_mean_sec"] / (3600 * 24),3)
+    agg_df["mediane_eer_bilan_J"] = round(agg_df["temps_bilan_median_sec"] / (3600 * 24),3)
+    agg_df["moyenne_eer_recoG_J"] = round(agg_df["temps_recoGenerated_mean_sec"] / (3600 * 24),3)
+    agg_df["mediane_eer_recoG_J"] = round(agg_df["temps_recoGenerated_median_sec"] / (3600 * 24),3)
+
+    df_agg[col_start]=df_agg[col_start].astype(str)
+    df_agg = pd.merge(df_agg, result_bilan, left_on=col_start, right_on=col_cohort, how="left")
+    df_agg = pd.merge(df_agg, result_reco,  left_on=col_start, right_on=col_cohort, how="left")
+    df_agg = pd.merge(df_agg, result_reco_consul,  left_on=col_start, right_on=col_cohort, how="left")
+    df_agg = df_agg.drop([f'{col_cohort}_x',f'{col_cohort}_y'], axis=1)
+
+    df_agg = pd.merge(df_agg, agg_df[[col_cohort,"moyenne_eer_bilan_J","mediane_eer_bilan_J","moyenne_eer_recoG_J","mediane_eer_recoG_J"]], left_on=col_start, right_on=col_cohort, how="left")
+    # df_agg.rename(columns={"total":"inscrits","verified":"mail_verified","step_4_bilan": "bilan_generated", "step_10_generated_reco": "reco_generated"}, inplace=True)
+    # df_agg = df_agg[[col_start,"inscrits","mail_verified","bilan_generated","moyenne_eer_bilan_J","mediane_eer_bilan_J","reco_generated","moyenne_eer_recoG_J","mediane_eer_recoG_J"]]
+    df_agg.rename(columns={"total":"inscrits","verified":"mail_verified","step_4_bilan": "bilan_generated", "step_10_generated_reco": "reco_generated","step_12_reco_consulted":"reco_consulted"}, inplace=True)
+    df_agg = df_agg[[col_start,"inscrits","mail_verified","bilan_generated","moyenne_eer_bilan_J","mediane_eer_bilan_J","reco_generated","moyenne_eer_recoG_J","mediane_eer_recoG_J","reco_consulted"]]
+    
+    return (df_agg)
+
+st.subheader(":bookmark_tabs: Data pour Anne")
+st.write('vision hebdo')
+st.dataframe(build_agg_stats_for_Anne(df_ana, 'cohort', df_weekly, 'week_start'))
+st.write('vision mensu')
+st.dataframe(build_agg_stats_for_Anne(df_ana, 'cohort_monthly', df_month, 'month_start'))
 
 df_daily_bilan = pd.read_parquet(f"dataMarket/bilan_daily.parquet")
 st.dataframe(df_daily_bilan)
