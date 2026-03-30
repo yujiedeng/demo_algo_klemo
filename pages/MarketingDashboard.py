@@ -10,8 +10,8 @@ import os
 from helpers.auth import check_password
 import pytz
 
-# if not check_password():
-#     st.stop()
+if not check_password():
+    st.stop()
 
 df = pd.read_parquet(f"dataMarket/downloads.parquet")
 mtime = os.path.getmtime("dataMarket/downloads.parquet")
@@ -376,13 +376,20 @@ def build_agg_stats_for_Anne(df,col_cohort,df_agg,col_start):
     return (df_agg)
 
 st.subheader(":bookmark_tabs: Data pour Anne")
-st.write('vision hebdo')
+st.write('VISION HEBDO COHORT')
 st.dataframe(build_agg_stats_for_Anne(df_ana, 'cohort', df_weekly, 'week_start'))
-st.write('vision mensu')
+st.write('VISION MENSU COHORT')
 st.dataframe(build_agg_stats_for_Anne(df_ana, 'cohort_monthly', df_month, 'month_start'))
 
-df_daily_bilan = pd.read_parquet(f"dataMarket/bilan_daily.parquet")
-st.dataframe(df_daily_bilan)
+st.write('VISION HEBDO NOMBRE')
+st.write("Petit point d'attention: nombre de consultation reco n'est pas remonté correctement avant 2026")
+df_hebdo = pd.read_parquet(f"dataMarket/hebdo.parquet")
+st.dataframe(df_hebdo)
+
+st.write('VISION MENSU NOMBRE')
+df_mensu = pd.read_parquet(f"dataMarket/mensu.parquet")
+st.dataframe(df_mensu)
+
 
 st.subheader("🧑‍🧑‍🧒 Table de Souscription en cours")
 st.write('Souscription en cours')
