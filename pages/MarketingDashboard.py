@@ -424,6 +424,12 @@ items = [
 
     {"id": 9, "content": "🛠️ Optim Parcours: KYC => Fin de souscription", "start": "2026-03-11T08:30:00", "group": "9"},
 
+    {"id": 10, "content": ":rocket: Nouvel Onboarding en A/B Testing", "start": "2026-04-17T09:41:00", "group": "10"},
+
+    {"id": 11, "content": ":rocket: Nouvel Onboarding fusionné", "start": "2026-05-18T16:49:00", "group": "11"},
+
+    {"id": 12, "content": ":rocket: Module Investir - souscription direct", "start": "2026-05-25T18:18:00", "group": "12"}
+
 ]
 
 
@@ -439,6 +445,10 @@ if "events" not in st.session_state:
         {"Start": items[6]["start"], "Event": items[6]["content"], "Type": "Dev"},
         {"Start": items[7]["start"], "Event": items[7]["content"], "Type": "Dev"},
         {"Start": items[8]["start"], "Event": items[8]["content"], "Type": "Dev"},
+        {"Start": items[9]["start"], "Event": items[9]["content"], "Type": "Dev"},
+        {"Start": items[10]["start"], "Event": items[10]["content"], "Type": "Dev"},
+        {"Start": items[11]["start"], "Event": items[11]["content"], "Type": "Dev"},
+        
     ])
 
 # Editable table
