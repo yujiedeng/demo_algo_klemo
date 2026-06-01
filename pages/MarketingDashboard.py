@@ -424,11 +424,11 @@ items = [
 
     {"id": 9, "content": "🛠️ Optim Parcours: KYC => Fin de souscription", "start": "2026-03-11T08:30:00", "group": "9"},
 
-    {"id": 10, "content": ":rocket: Nouvel Onboarding en A/B Testing", "start": "2026-04-17T09:41:00", "group": "10"},
+    {"id": 10, "content": "🚀 Nouvel Onboarding en A/B Testing", "start": "2026-04-17T09:41:00", "group": "10"},
 
-    {"id": 11, "content": ":rocket: Nouvel Onboarding fusionné", "start": "2026-05-18T16:49:00", "group": "11"},
+    {"id": 11, "content": "🚀 Nouvel Onboarding fusionné", "start": "2026-05-18T16:49:00", "group": "11"},
 
-    {"id": 12, "content": ":rocket: Module Investir - souscription direct", "start": "2026-05-25T18:18:00", "group": "12"}
+    {"id": 12, "content": "🚀 Module Investir - souscription direct", "start": "2026-05-25T18:18:00", "group": "12"}
 
 ]
 
