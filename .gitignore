@@ -6,4 +6,5 @@ cluster/
 *.ipynb
 *.png
 *.pkl
+*.xlsx
 MarketingDashboardApp.py
