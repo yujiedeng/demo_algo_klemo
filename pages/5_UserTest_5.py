@@ -18,7 +18,7 @@ if "base_t5" not in st.session_state:
 with st.expander("👤 Information", expanded=True):
     st.write("ID User:", st.session_state.base_t5["Client"]["PatClientDetail"][0]["id"])
     st.write("Statut Pro User:", st.session_state.base_t5["Client"]["PatClientDetail"][0]["statutPro"])
-    st.write("Objectif du client est d'investir - optimiser la rentabilité et les risques de ses actifs financiers")
+    # st.write("Objectif du client est d'investir - optimiser la rentabilité et les risques de ses actifs financiers")
 
     col1,col2,col3  = st.columns(3)
 
