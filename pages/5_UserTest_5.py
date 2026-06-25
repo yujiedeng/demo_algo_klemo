@@ -14,7 +14,7 @@ st.title("♟️ Test Utilisateur 5")
 if "base_t5" not in st.session_state:
     st.session_state.base_t5 = func.load_base_info("t5")
 
-# --- Step 2: Show editable section ---
+# --- Step 2: Show editable section --- 
 with st.expander("👤 Information", expanded=True):
     st.write("ID User:", st.session_state.base_t5["Client"]["PatClientDetail"][0]["id"])
     st.write("Statut Pro User:", st.session_state.base_t5["Client"]["PatClientDetail"][0]["statutPro"])
