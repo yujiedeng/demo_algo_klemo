@@ -4,6 +4,7 @@ from streamlit_timeline import st_timeline
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 from datetime import datetime
 import os 
@@ -341,6 +342,73 @@ st.subheader("🧑‍🧑‍🧒 Analyse Cohort par semaine")
 cohorts_stats_hebdo = build_cohort_stats(df_ana,"cohort")
 st.subheader("🧑‍🧑‍🧒 Analyse Cohort par mois")
 cohorts_stats_mensu = build_cohort_stats(df_ana,"cohort_monthly")
+
+# FOCUS CHAT V2 V3 
+df_ana_focus = df_ana[df_ana["cohort_monthly"]>="2026-05"]
+
+def build_v2_v3_comparison(df_ana, col_cohort="cohort"):
+    g = df_ana.groupby(col_cohort, as_index=False).agg(
+        total=("PK", "size"),
+        v2_start=("step_2_chat_v2_started", "sum"),
+        v2_end=("step_3_chat_v2_end", "sum"),
+        v3_start=("step_2_chat_v3_started", "sum"),
+        v3_end=("step_3_chat_v3_end", "sum"),
+    )
+    g["conv_A_v2"] = (g["v2_end"] / g["v2_start"]).round(4)
+    g["conv_B_v3"] = (g["v3_end"] / g["v3_start"]).round(4)
+    return g
+
+comparison_h = build_v2_v3_comparison(df_ana_focus, col_cohort="cohort")
+
+def plot_v2_v3_comparison(comparison, col_cohort="cohort"):
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+    # --- Volumes (axe Y principal) ---
+    fig.add_trace(go.Bar(
+        x=comparison[col_cohort], y=comparison["v2_start"],
+        name="A - v2 start", marker_color="#a6cee3", offsetgroup="v2",
+    ), secondary_y=False)
+    fig.add_trace(go.Bar(
+        x=comparison[col_cohort], y=comparison["v2_end"],
+        name="A - v2 end", marker_color="#1f78b4", offsetgroup="v2", base=0,
+    ), secondary_y=False)
+    fig.add_trace(go.Bar(
+        x=comparison[col_cohort], y=comparison["v3_start"],
+        name="B - v3 start", marker_color="#fdbf6f", offsetgroup="v3",
+    ), secondary_y=False)
+    fig.add_trace(go.Bar(
+        x=comparison[col_cohort], y=comparison["v3_end"],
+        name="B - v3 end", marker_color="#ff7f00", offsetgroup="v3", base=0,
+    ), secondary_y=False)
+
+    # --- Taux de conversion (axe Y secondaire) ---
+    fig.add_trace(go.Scatter(
+        x=comparison[col_cohort], y=comparison["conv_A_v2"],
+        name="Conversion A (v2)", mode="lines+markers",
+        line=dict(color="#1f78b4", width=3, dash="dot"),
+    ), secondary_y=True)
+    fig.add_trace(go.Scatter(
+        x=comparison[col_cohort], y=comparison["conv_B_v3"],
+        name="Conversion B (v3)", mode="lines+markers",
+        line=dict(color="#ff7f00", width=3, dash="dot"),
+    ), secondary_y=True)
+
+    fig.update_layout(
+        title="Volumes start/end vs taux de conversion — parcours A (v2) vs B (v3)",
+        barmode="group",
+        xaxis_title="Cohort",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0),
+    )
+    fig.update_yaxes(title_text="Volume", secondary_y=False)
+    fig.update_yaxes(title_text="Taux de conversion", tickformat=".0%", secondary_y=True)
+    st.plotly_chart(fig, use_container_width=True)
+    
+    return fig
+
+fig = plot_v2_v3_comparison(comparison_h, col_cohort="cohort")
+
+
+
 
 
 def build_agg_stats_for_Anne(df,col_cohort,df_agg,col_start):
