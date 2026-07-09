@@ -344,6 +344,7 @@ st.subheader("🧑‍🧑‍🧒 Analyse Cohort par mois")
 cohorts_stats_mensu = build_cohort_stats(df_ana,"cohort_monthly")
 
 # FOCUS CHAT V2 V3 
+st.subheader("FOCUS CHAT V2 V3 - 2026 S2")
 df_ana_focus = df_ana[df_ana["cohort_monthly"]>="2026-05"]
 
 def build_v2_v3_comparison(df_ana, col_cohort="cohort"):
@@ -359,6 +360,9 @@ def build_v2_v3_comparison(df_ana, col_cohort="cohort"):
     return g
 
 comparison_h = build_v2_v3_comparison(df_ana_focus, col_cohort="cohort")
+comparison_m = build_v2_v3_comparison(df_ana_focus, col_cohort="cohort_monthly")
+
+st.dataframe(comparison_m)
 
 def plot_v2_v3_comparison(comparison, col_cohort="cohort"):
     fig = make_subplots(specs=[[{"secondary_y": True}]])
@@ -406,7 +410,6 @@ def plot_v2_v3_comparison(comparison, col_cohort="cohort"):
     return fig
 
 fig = plot_v2_v3_comparison(comparison_h, col_cohort="cohort")
-
 
 
 
