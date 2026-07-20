@@ -370,35 +370,35 @@ def plot_v2_v3_comparison(comparison, col_cohort="cohort"):
     # --- Volumes (axe Y principal) ---
     fig.add_trace(go.Bar(
         x=comparison[col_cohort], y=comparison["v2_start"],
-        name="A - v2 start", marker_color="#a6cee3", offsetgroup="v2",
+        name="ChatV2 start", marker_color="#a6cee3", offsetgroup="v2",
     ), secondary_y=False)
     fig.add_trace(go.Bar(
         x=comparison[col_cohort], y=comparison["v2_end"],
-        name="A - v2 end", marker_color="#1f78b4", offsetgroup="v2", base=0,
+        name="ChatV2 end", marker_color="#1f78b4", offsetgroup="v2", base=0,
     ), secondary_y=False)
     fig.add_trace(go.Bar(
         x=comparison[col_cohort], y=comparison["v3_start"],
-        name="B - v3 start", marker_color="#fdbf6f", offsetgroup="v3",
+        name="ChatV3 start", marker_color="#fdbf6f", offsetgroup="v3",
     ), secondary_y=False)
     fig.add_trace(go.Bar(
         x=comparison[col_cohort], y=comparison["v3_end"],
-        name="B - v3 end", marker_color="#ff7f00", offsetgroup="v3", base=0,
+        name="ChatV3 end", marker_color="#ff7f00", offsetgroup="v3", base=0,
     ), secondary_y=False)
 
     # --- Taux de conversion (axe Y secondaire) ---
     fig.add_trace(go.Scatter(
         x=comparison[col_cohort], y=comparison["conv_A_v2"],
-        name="Conversion A (v2)", mode="lines+markers",
+        name="Conversion ChatV2", mode="lines+markers",
         line=dict(color="#1f78b4", width=3, dash="dot"),
     ), secondary_y=True)
     fig.add_trace(go.Scatter(
         x=comparison[col_cohort], y=comparison["conv_B_v3"],
-        name="Conversion B (v3)", mode="lines+markers",
+        name="Conversion ChatV3", mode="lines+markers",
         line=dict(color="#ff7f00", width=3, dash="dot"),
     ), secondary_y=True)
 
     fig.update_layout(
-        title="Volumes start/end vs taux de conversion — parcours A (v2) vs B (v3)",
+        title="Volumes start/end vs taux de conversion — parcours ChatV2 vs ChatV3",
         barmode="group",
         xaxis_title="Cohort",
         legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0),
