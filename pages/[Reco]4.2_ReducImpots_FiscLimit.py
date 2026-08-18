@@ -43,7 +43,7 @@ with st.expander("👤 Information", expanded=True):
 
     with col1:
         age = st.number_input("Mon Age", min_value=18, max_value=100, value=datetime.today().year - int(st.session_state.base_person_4_2["Client"]["PatClientDetail"][0]["dateNaissance"][:4]))
-        situation = st.selectbox("Ma Situation Personnelle", ["Célibataire", "Union Libre", "Pacsé(e)", "Marié(e)"], index=["Célibataire", "Union Libre", "Pacsé(e)", "Marié(e)"].index(st.session_state.base_person_4_2["Client"]["PatClientDetail"][0]["typeUnion"]))
+        situation = st.selectbox("Ma Situation Personnelle", ["Célibataire", "Union Libre", "Pacsé(e)", "Marié(e)"], index=["Célibataire", "Union Libre", "Pacsé(e)", "Marié(e)"].index(st.session_state.base_person_4_1["Client"]["PatClientDetail"][0]["typeUnion"]))
         charge = st.number_input("Mes dépenses courantes mensuelles (€)", min_value=0, step=100, value=int(st.session_state.base_person_4_2["Cashflow"]["PatCashflowDetail"][0]["depensesCourantes"]))
 
     with col2:
