@@ -8,3 +8,5 @@ cluster/
 *.pkl
 *.xlsx
 MarketingDashboardApp.py
+
+json_input
